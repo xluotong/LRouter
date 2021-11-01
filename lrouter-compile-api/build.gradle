@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+dependencies {
+    api dep.gson
+    api "javax.annotation:jsr250-api:1.0"
+}
