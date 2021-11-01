@@ -1,45 +1,38 @@
 package com.billbook.lib.router.internal
 
+interface ServiceCentral : ServiceRegistry {
 
-/**
- * 所有模块的Service中心
- */
-interface ServiceCentral {
+    fun <T> getService(clazz: Class<T>): T?
 
-    val registry:ServiceRegistry
+    fun <T> getService(clazz: Class<T>, name: String): T?
 
-    fun <T> getService(clazz: Class<T>):T?
+    fun <T> getService(clazz: Class<T>, vararg params: Any): T?
 
-    fun <T> getServices(clazz:Class<T>):List<T>
+    operator fun <T> get(clazz: Class<T>): T? {
+        return getService(clazz)
+    }
 }
 
 interface ServiceRegistry {
 
-    fun register(serviceInfo:ServiceInfo<*>)
+    fun register(serviceInfo: ServiceInfo<*>)
 }
 
-enum class CacheIn{
+enum class CacheIn {
     SINGLETON,
     UNDEFINED
 }
 
 data class ServiceInfo<T>(
-    val moduleName:String,
-    val definition:Class<out T>,
-    val service:Class<T>,
+    val moduleName: String,
+    val definition: Class<out T>,
+    val service: Class<T>,
     val name: String,
     val desc: String,
     val cacheIn: CacheIn
 )
 
-abstract class ServiceCollector {
+abstract class ServiceContainer {
 
-    abstract fun onCollect(registry: ServiceRegistry)
+    abstract fun onRegister(registry: ServiceRegistry)
 }
-
-//class ServiceCollectorImpl : ServiceCollector() {
-//
-//    override fun onCollect(registry: ServiceRegistry) {
-//        registry.register(ServiceInfo("","",))
-//    }
-//}

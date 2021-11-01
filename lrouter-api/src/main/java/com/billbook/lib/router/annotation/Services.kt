@@ -13,6 +13,6 @@ annotation class Services(
 @Target(AnnotationTarget.CLASS)
 annotation class Service(
     val value:KClass<*>,
-    val name:String,
-    val desc:String
+    val name:String = "",
+    val desc:String = ""
 )
