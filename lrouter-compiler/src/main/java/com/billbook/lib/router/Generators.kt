@@ -1,13 +1,16 @@
 package com.billbook.lib.router
 
 import com.billbook.lib.router.internal.ModuleContainer
+import com.billbook.lib.router.internal.RouteInfo
 import com.billbook.lib.router.internal.ServiceRegistry
 import com.squareup.javapoet.*
 import java.lang.reflect.WildcardType
+import java.util.*
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Modifier
 import javax.tools.StandardLocation
+import kotlin.collections.ArrayList
 
 private fun String.simple() = this.split(".").let { if (it.size > 1) it[1] else it[0] }
 
@@ -33,27 +36,35 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                     .addModifiers(Modifier.PUBLIC)
                     .addAnnotation(Override::class.java)
                     .addCode(
-                        CodeBlock.builder().apply {
-                            this.addStatement(
-                                "\$T<\$T<?>> services = new \$T<>()",
-                                List::class.java,
-                                ServiceInfo::class.java,
-                                ArrayList::class.java
+                        if (moduleMeta.serviceMetas.isEmpty()) {
+                            CodeBlock.builder().addStatement(
+                                "return \$T.emptyList<ServiceInfo<*>>()",
+                                Collections::class.java
                             )
-                            moduleMeta.serviceMetas.forEach { serviceMeta ->
+                                .build()
+                        } else {
+                            CodeBlock.builder().apply {
                                 this.addStatement(
-                                    "services.add(new \$T(\$T.class,\$T.class,\$S,\$S,\$T.\$L))",
+                                    "\$T<\$T<?>> services = new \$T<>()",
+                                    List::class.java,
                                     ServiceInfo::class.java,
-                                    serviceMeta.definition.toClassName(),
-                                    serviceMeta.service.toClassName(),
-                                    serviceMeta.name,
-                                    serviceMeta.desc,
-                                    ClassName.get(CacheIn::class.java),
-                                    if (serviceMeta.singleton) CacheIn.SINGLETON else CacheIn.UNDEFINED
+                                    ArrayList::class.java
                                 )
-                            }
-                            addStatement("return services;")
-                        }.build()
+                                moduleMeta.serviceMetas.forEach { serviceMeta ->
+                                    this.addStatement(
+                                        "services.add(new \$T(\$T.class,\$T.class,\$S,\$S,\$T.\$L))",
+                                        ServiceInfo::class.java,
+                                        serviceMeta.definition.toClassName(),
+                                        serviceMeta.service.toClassName(),
+                                        serviceMeta.name,
+                                        serviceMeta.desc,
+                                        ClassName.get(CacheIn::class.java),
+                                        if (serviceMeta.singleton) CacheIn.SINGLETON else CacheIn.UNDEFINED
+                                    )
+                                }
+                                addStatement("return services")
+                            }.build()
+                        }
                     )
                     .returns(
                         ParameterizedTypeName.get(
@@ -62,6 +73,24 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                                 ServiceInfo::class.java.toClassName(),
                                 WildcardTypeName.subtypeOf(Object::class.java)
                             )
+                        )
+                    )
+                    .build()
+            )
+            .addMethod(
+                MethodSpec.methodBuilder("getRoutes")
+                    .addModifiers(Modifier.PUBLIC)
+                    .addAnnotation(Override::class.java)
+                    .addCode(
+                        CodeBlock.builder().addStatement(
+                            "return \$T.emptyList<\$T>>()",
+                            Collections::class.java, RouteInfo::class.java
+                        ).build()
+                    )
+                    .returns(
+                        ParameterizedTypeName.get(
+                            List::class.java.toClassName(),
+                            RouteInfo::class.java.toClassName()
                         )
                     )
                     .build()
