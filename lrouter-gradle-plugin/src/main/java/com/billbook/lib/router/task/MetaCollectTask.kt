@@ -6,6 +6,7 @@ import com.android.build.gradle.api.TestVariant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import com.billbook.lib.router.META_DATA_PATH
 import com.billbook.lib.router.ModuleMeta
+import com.billbook.lib.router.NamedAction
 import com.billbook.lib.router.globalGson
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -59,7 +60,7 @@ class CollectMetaTask : DefaultTask() {
         private val project: Project,
         private val variant: ApplicationVariant,
         private val fileCollection: ConfigurableFileCollection
-    ) : Action<CollectMetaTask> {
+    ) : NamedAction<CollectMetaTask> {
 
         private val outputFile: File
             get() = File(
@@ -67,10 +68,10 @@ class CollectMetaTask : DefaultTask() {
                 "intermediates/lrouter/${variant.name}/other_meta.json"
             )
 
-        private val taskName: String get() = "collect${variant.name.capitalize()}LRouteMeta"
+        override val name: String get() = "collect${variant.name.capitalize()}LRouteMeta"
 
         override fun execute(task: CollectMetaTask) {
-            fileCollection.builtBy(taskName)
+            fileCollection.builtBy(name)
                 .from(outputFile)
             task.inputFileCollection = project.files()
                 .fromVariant(variant)

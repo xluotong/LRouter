@@ -1,9 +1,12 @@
 package com.billbook.lib.router.internal
 
+import com.billbook.lib.router.CacheIn
+import com.billbook.lib.router.ServiceInfo
+
 /**
  * @author xluotong@gmail.com
  */
-class ServiceCentralImpl : ServiceCentral {
+class DefaultServiceCentral : ServiceCentral, ServiceRegistryOwner {
 
     private val mServiceMap: MutableMap<Class<*>, MutableList<ServiceInfo<*>>> by lazy { hashMapOf() }
     private val mCache = mutableMapOf<Class<*>, Any?>()
@@ -50,11 +53,14 @@ class ServiceCentralImpl : ServiceCentral {
         }
     }
 
-    @Synchronized
-    override fun register(serviceInfo: ServiceInfo<*>) {
-        mServiceMap.getOrPut(serviceInfo.definition) { arrayListOf() }
-            .add(serviceInfo)
+    inner class DefaultRegistry : ServiceRegistry {
+        override fun register(serviceInfo: ServiceInfo<*>) {
+            mServiceMap.getOrPut(serviceInfo.definition) { arrayListOf() }
+                .add(serviceInfo)
+        }
     }
+
+    override val registry: ServiceRegistry get() = DefaultRegistry()
 }
 
 internal fun <T> Class<*>.tryNewInstance(): T? = runCatching {

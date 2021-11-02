@@ -4,7 +4,9 @@ import com.squareup.javapoet.ClassName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.tools.Diagnostic
 
-internal const val SERVICE_CONTAINER_CLASS_NAME_FORMAT = "%s_ServiceContainer"
+internal const val SERVICE_CONTAINER_CLASS_NAME_FORMAT = "$PACKAGE_GENERATE.%s_ModuleContainer"
+
+internal inline fun Class<*>.toClassName() = ClassName.get(this)
 
 internal fun String.toClassName(): ClassName {
     val packageIndex = lastIndexOf(".")

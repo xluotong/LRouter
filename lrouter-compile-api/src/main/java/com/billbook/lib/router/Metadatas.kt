@@ -4,7 +4,7 @@ const val META_DATA_PATH = "META-INF/lrouters/metadata.json"
 
 data class ModuleMeta(
     val name: String,
-    val serviceContainer: String, // Module serviceContainer class name
+    val container: String, // Module serviceContainer class name
     val routeMetas: List<RouteMeta>,
     val serviceMetas: List<ServiceMeta>
 )

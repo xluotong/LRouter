@@ -29,7 +29,7 @@ class MetaCollectorImpl : MetaCollector {
             val moduleName = requireNotNull(moduleName())
             return ModuleMeta(
                 moduleName,
-                String.format(SERVICE_CONTAINER_CLASS_NAME_FORMAT, moduleName.capitalize()),
+                 String.format(SERVICE_CONTAINER_CLASS_NAME_FORMAT, moduleName.capitalize()),
                 _routeMetas,
                 _serviceMetas
             )
