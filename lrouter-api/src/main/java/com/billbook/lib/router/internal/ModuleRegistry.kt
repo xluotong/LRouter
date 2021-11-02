@@ -6,7 +6,7 @@ package com.billbook.lib.router.internal
 class ModuleRegistry(private val mServiceRegistry: ServiceRegistry) : ServiceRegistry {
 
     fun init() {
-        Modules.serviceContainers().forEach {
+        ModuleProvider.serviceContainers().forEach {
             runCatching { Class.forName(it).newInstance() as ServiceContainer }.getOrNull()
                 ?.onRegister(mServiceRegistry)
         }

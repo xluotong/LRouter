@@ -14,5 +14,6 @@ dependencies {
     implementation("org.ow2.asm:asm:9.1")
     implementation("org.ow2.asm:asm-commons:9.1")
     implementation("com.android.tools.build:gradle:4.2.2")
+    compileOnly(kotlin("gradle-plugin"))
     compileOnly(gradleApi())
 }

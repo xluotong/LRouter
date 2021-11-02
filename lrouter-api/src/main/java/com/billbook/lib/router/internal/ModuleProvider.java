@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * @author xluotong@gmail.com
  */
-public class Modules {
+public class ModuleProvider {
 
-    public static List<String> serviceContainers() {
+    public static List<String> modules() {
         throw new RuntimeException("Stub!");
     }
 }
