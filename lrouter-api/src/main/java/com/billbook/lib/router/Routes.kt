@@ -1,4 +1,4 @@
-package com.billbook.lib.router.internal
+package com.billbook.lib.router
 
 import org.omg.PortableInterceptor.Interceptor
 
@@ -11,6 +11,7 @@ data class RouteInfo(
     val path: String,
     val scheme: String = "*",
     val host: String = "*",
+    val targetClass:Class<*>,
     val interceptors: List<Class<out Interceptor>>,
     val type: RouteType,
 )

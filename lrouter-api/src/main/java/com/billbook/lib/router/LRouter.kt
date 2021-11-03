@@ -2,7 +2,6 @@ package com.billbook.lib.router
 
 import com.billbook.lib.router.internal.RouteContext
 import com.billbook.lib.router.internal.RouteContextImpl
-import com.billbook.lib.router.internal.RouteInfo
 
 object LRouter {
 

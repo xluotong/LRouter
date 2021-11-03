@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
-annotation class Routers(
+annotation class Routes(
     val routes:Array<Route> = [],
     val name:String,
     val desc:String,

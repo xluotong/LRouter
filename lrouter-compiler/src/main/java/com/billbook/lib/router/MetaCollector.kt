@@ -58,4 +58,4 @@ class MetaCollectorImpl : MetaCollector {
     }
 }
 
-internal fun String.asModuleName() = "lr" + this.encodeUtf8().sha1().hex()
+internal inline fun String.asModuleName() = "lr" + this.encodeUtf8().sha1().hex()

@@ -1,10 +1,8 @@
 package com.billbook.lib.router
 
+import com.billbook.lib.router.internal.DefaultModule
 import com.billbook.lib.router.internal.ModuleContainer
-import com.billbook.lib.router.internal.RouteInfo
-import com.billbook.lib.router.internal.ServiceRegistry
 import com.squareup.javapoet.*
-import java.lang.reflect.WildcardType
 import java.util.*
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
@@ -31,6 +29,18 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
             )
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .superclass(ClassName.get(ModuleContainer::class.java))
+            .addMethod(
+                MethodSpec.constructorBuilder()
+                    .addModifiers(Modifier.PUBLIC)
+                    .addStatement(
+                        "super(new \$T(\$S,\$S.class)",
+                        DefaultModule::class.java,
+                        moduleMeta.name,
+                        "null"
+                    )
+                    .returns(Void::class.java)
+                    .build()
+            )
             .addMethod(
                 MethodSpec.methodBuilder("getServices")
                     .addModifiers(Modifier.PUBLIC)
@@ -83,7 +93,7 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                     .addAnnotation(Override::class.java)
                     .addCode(
                         CodeBlock.builder().addStatement(
-                            "return \$T.emptyList<\$T>>()",
+                            "return \$T.emptyList()",
                             Collections::class.java, RouteInfo::class.java
                         ).build()
                     )
