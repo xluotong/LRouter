@@ -18,8 +18,8 @@ annotation class Routes(
 @Target(AnnotationTarget.CLASS)
 annotation class Route(
     val path:String,
-    val scheme:String = "*",
-    val host:String = "*",
+    val scheme:String = "",
+    val host:String = "",
     val desc:String = "",
     val interceptors:Array<KClass<out Interceptor>> = []
 )

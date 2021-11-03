@@ -9,10 +9,12 @@ internal interface RouteContext {
     val routeRegistry: RouteRegistry
     val serviceRegistry: ServiceRegistry
     val serviceCentral: ServiceCentral
+    val routeCentral: RouteCentral
 }
 
 internal class RouteContextImpl : RouteContext {
     private val _serviceCentral = DefaultServiceCentral()
+    private val _routeCentral = RouteCentral.get()
 
     override val routeRegistry: RouteRegistry
         get() = TODO("Not yet implemented")
@@ -20,6 +22,8 @@ internal class RouteContextImpl : RouteContext {
         get() = _serviceCentral.registry
     override val serviceCentral: ServiceCentral
         get() = _serviceCentral
+    override val routeCentral: RouteCentral
+        get() = _routeCentral
 
     init {
         ModuleProvider.modules().forEach { container ->

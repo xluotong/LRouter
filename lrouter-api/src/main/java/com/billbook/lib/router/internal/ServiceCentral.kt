@@ -3,7 +3,7 @@ package com.billbook.lib.router.internal
 /**
  * @author xluotong@gmail.com
  */
-interface ServiceCentral {
+internal interface ServiceCentral {
 
     fun <T> getService(clazz: Class<T>): T?
 

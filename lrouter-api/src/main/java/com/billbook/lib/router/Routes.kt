@@ -13,8 +13,8 @@ typealias RouteResponse = Request
 
 data class RouteInfo(
     val path: String,
-    val scheme: String = "*",
-    val host: String = "*",
+    val scheme: String,
+    val host: String,
     val group: String,
     val groupDesc: String,
     val desc:String,
