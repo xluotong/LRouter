@@ -1,19 +1,26 @@
 package com.billbook.lib.router
 
-import org.omg.PortableInterceptor.Interceptor
+import com.billbook.lib.router.interceptor.Interceptor
+
 
 /**
  * @author xluotong@gmail.com
  */
+typealias RouteRequest = Request
+
+typealias RouteResponse = Request
+
+
 data class RouteInfo(
-    val name: String,
-    val desc: String,
     val path: String,
     val scheme: String = "*",
     val host: String = "*",
+    val group: String,
+    val groupDesc: String,
+    val desc:String,
     val targetClass:Class<*>,
-    val interceptors: List<Class<out Interceptor>>,
     val type: RouteType,
+    val interceptors: List<Class<out Interceptor>>?,
 )
 
 enum class RouteType(name: String) {

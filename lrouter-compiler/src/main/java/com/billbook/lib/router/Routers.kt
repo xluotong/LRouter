@@ -6,6 +6,10 @@ import javax.tools.Diagnostic
 
 internal const val SERVICE_CONTAINER_CLASS_NAME_FORMAT = "$PACKAGE_GENERATE.%s_ModuleContainer"
 
+internal const val ACTIVITY = "android.app.Activity"
+internal const val SERVICE = "android.app.Service"
+internal const val FRAGMENT = "androidx.fragment.app.Fragment"
+
 internal inline fun Class<*>.toClassName() = ClassName.get(this)
 
 internal fun String.toClassName(): ClassName {

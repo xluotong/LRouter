@@ -10,12 +10,14 @@ data class ModuleMeta(
 )
 
 data class RouteMeta(
-    val name: String,
+    val group: String,
+    val groupDesc: String,
     val desc: String,
     val definition: String,
     val scheme: String,
     val host: String,
     val path: String,
+    val type: RouteType,
     val interceptors: List<String>
 )
 

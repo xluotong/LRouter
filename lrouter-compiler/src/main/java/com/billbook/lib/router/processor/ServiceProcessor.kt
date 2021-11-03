@@ -101,7 +101,7 @@ private fun Element.requireElement(types: Types): Element {
     return this
 }
 
-internal fun Service.serviceType(): TypeMirror {
+private fun Service.serviceType(): TypeMirror {
     return try {
         value
         error("Expected to get a MirroredTypeException!")
@@ -110,7 +110,7 @@ internal fun Service.serviceType(): TypeMirror {
     }
 }
 
-internal fun Services.serviceType(): List<TypeMirror> {
+private fun Services.serviceType(): List<TypeMirror> {
     return try {
         value
         error("Expected to get a MirroredTypeException!")

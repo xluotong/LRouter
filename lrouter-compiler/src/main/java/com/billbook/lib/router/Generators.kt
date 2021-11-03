@@ -3,6 +3,7 @@ package com.billbook.lib.router
 import com.billbook.lib.router.internal.DefaultModule
 import com.billbook.lib.router.internal.ModuleContainer
 import com.squareup.javapoet.*
+import java.lang.StringBuilder
 import java.util.*
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
@@ -10,7 +11,7 @@ import javax.lang.model.element.Modifier
 import javax.tools.StandardLocation
 import kotlin.collections.ArrayList
 
-private fun String.simple() = this.split(".").let { if (it.size > 1) it[1] else it[0] }
+private fun String.simple() = this.split(".").let { it[it.lastIndex] }
 
 /**
  * @author xluotong@gmail.com
@@ -33,12 +34,11 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                 MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC)
                     .addStatement(
-                        "super(new \$T(\$S,\$S.class)",
+                        "super(new \$T(\$S,\$L))",
                         DefaultModule::class.java,
                         moduleMeta.name,
                         "null"
                     )
-                    .returns(Void::class.java)
                     .build()
             )
             .addMethod(
@@ -48,18 +48,16 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                     .addCode(
                         if (moduleMeta.serviceMetas.isEmpty()) {
                             CodeBlock.builder().addStatement(
-                                "return \$T.emptyList<ServiceInfo<*>>()",
+                                "return \$T.emptyList()",
                                 Collections::class.java
-                            )
-                                .build()
+                            ).build()
                         } else {
-                            CodeBlock.builder().apply {
-                                this.addStatement(
-                                    "\$T<\$T<?>> services = new \$T<>()",
-                                    List::class.java,
-                                    ServiceInfo::class.java,
-                                    ArrayList::class.java
-                                )
+                            CodeBlock.builder().addStatement(
+                                "\$T<\$T<?>> services = new \$T<>()",
+                                List::class.java,
+                                ServiceInfo::class.java,
+                                ArrayList::class.java
+                            ).apply {
                                 moduleMeta.serviceMetas.forEach { serviceMeta ->
                                     this.addStatement(
                                         "services.add(new \$T(\$T.class,\$T.class,\$S,\$S,\$T.\$L))",
@@ -72,8 +70,8 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                                         if (serviceMeta.singleton) CacheIn.SINGLETON else CacheIn.UNDEFINED
                                     )
                                 }
-                                addStatement("return services")
-                            }.build()
+
+                            }.addStatement("return services").build()
                         }
                     )
                     .returns(
@@ -92,10 +90,63 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                     .addModifiers(Modifier.PUBLIC)
                     .addAnnotation(Override::class.java)
                     .addCode(
-                        CodeBlock.builder().addStatement(
-                            "return \$T.emptyList()",
-                            Collections::class.java, RouteInfo::class.java
-                        ).build()
+                        if(moduleMeta.routeMetas.isEmpty()) {
+                            CodeBlock.builder().addStatement(
+                                "return \$T.emptyList()",
+                                Collections::class.java
+                            ).build()
+                        } else {
+                            CodeBlock.builder().addStatement(
+                                "\$T<\$T> routes = new \$T<>()",
+                                List::class.java,
+                                RouteInfo::class.java,
+                                ArrayList::class.java
+                            ).apply {
+                                moduleMeta.routeMetas.forEach { routeMeta ->
+                                    if(routeMeta.interceptors.isEmpty()){
+                                        this.addStatement(
+                                            "routes.add(new \$T(\$S,\$S,\$S,\$S,\$S,\$S,\$T.class,\$T.\$L,\$L))",
+                                            RouteInfo::class.java,
+                                            routeMeta.path,
+                                            routeMeta.scheme,
+                                            routeMeta.host,
+                                            routeMeta.group,
+                                            routeMeta.groupDesc,
+                                            routeMeta.desc,
+                                            routeMeta.definition.toClassName(),
+                                            RouteType::class.java,
+                                            routeMeta.type,
+                                            "null"
+                                        )
+                                    } else {
+                                        val formatBuilder = StringBuilder("routes.add(new \$T(\$S,\$S,\$S,\$S,\$S,\$S,\$T.class,\$T.\$L,\$T.asList(")
+                                        routeMeta.interceptors.forEachIndexed { index,_ ->
+                                            formatBuilder.append("\$T.class")
+                                            if(index != routeMeta.interceptors.lastIndex){
+                                                formatBuilder.append(", ")
+                                            }
+                                        }
+                                        formatBuilder.append(")))")
+                                        this.addStatement(
+                                            formatBuilder.toString(),
+                                            RouteInfo::class.java,
+                                            routeMeta.path,
+                                            routeMeta.scheme,
+                                            routeMeta.host,
+                                            routeMeta.group,
+                                            routeMeta.groupDesc,
+                                            routeMeta.desc,
+                                            routeMeta.definition.toClassName(),
+                                            RouteType::class.java,
+                                            routeMeta.type,
+                                            Arrays::class.java,
+                                            *routeMeta.interceptors.map { it.toClassName() }.toTypedArray()
+                                        )
+                                    }
+                                }
+
+                            }.addStatement("return routes").build()
+                        }
                     )
                     .returns(
                         ParameterizedTypeName.get(

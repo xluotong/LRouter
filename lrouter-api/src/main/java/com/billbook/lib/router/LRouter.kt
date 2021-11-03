@@ -19,6 +19,10 @@ object LRouter {
         return context.serviceCentral.getService(clazz, params)
     }
 
+    fun findRoute(clazz: Class<*>): RouteInfo? {
+        TODO()
+    }
+
     operator fun get(uri: String): RouteInfo? {
         TODO()
     }
