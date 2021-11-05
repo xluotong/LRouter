@@ -41,7 +41,7 @@ internal class RealCall(
 
     private fun getResponseWithInterceptorChain(): Response {
         val interceptors = mutableListOf<Interceptor>()
-        interceptors += BridgeInterceptor()
+        interceptors += BridgeInterceptor(client.routeCentral)
         interceptors += LaunchInterceptor()
         val chain = RealInterceptorChain(this, interceptors, 0, originalRequest)
         return chain.proceed(originalRequest)

@@ -9,7 +9,7 @@ import com.billbook.lib.router.RouteCall
  * @author xluotong@gmail.com
  */
 internal class RealInterceptorChain(
-    private val call: RealCall,
+    private val call: RouteCall,
     private val interceptors: List<Interceptor>,
     private val index: Int,
     private val request: Request,

@@ -32,7 +32,7 @@ interface HasExtras<T> {
 }
 
 interface RequestBuilder<T> : HasExtras<T> {
-    fun uri(uri: String)
+    fun url(url: String)
     fun requestCode(code: Int): T
     fun addFlag(flag: Int): T
     fun setFlag(flag: Int): T
@@ -43,14 +43,18 @@ interface RequestBuilder<T> : HasExtras<T> {
 
 class Request private constructor(builder: Builder) {
 
-    private val uri: String = requireNotNull(builder.uri) { "Route request uri must not be null!" }
+    @get:JvmName("url")
+    val originalUrl: String = requireNotNull(builder.originalUrl) { "Route request uri must not be null!" }
+    @get:JvmName("extras")
     private val extras: Bundle? = builder.extras
+    @get:JvmName("requestCode")
     private val requestCode: Int? = builder.requestCode
+    @get:JvmName("flag")
     private val flag: Int? = builder.flag
-    private val enterAnim: Int? = builder.enterAnim
+    @get:JvmName("enterAnim") private val enterAnim: Int? = builder.enterAnim
 
     fun newBuilder(): Builder = Builder().apply {
-        this@Request.uri.let { this.uri(it) }
+        this@Request.originalUrl.let { this.url(it) }
         this@Request.extras?.let { this.addExtras(it) }
         this@Request.requestCode?.let { this.requestCode(it) }
         this@Request.flag?.let { this.setFlag(it) }
@@ -62,7 +66,7 @@ class Request private constructor(builder: Builder) {
         internal var requestCode: Int? = null
         internal var flag: Int? = null
         internal var enterAnim: Int? = null
-        internal var uri: String? = null
+        internal var originalUrl: String? = null
 
         override fun addExtra(key: String, value: Byte): Builder {
             extras.putByte(key, value)
@@ -157,7 +161,7 @@ class Request private constructor(builder: Builder) {
             TODO("Not yet implemented")
         }
 
-        override fun uri(uriString: String) {
+        override fun url(url: String) {
             TODO("Not yet implemented")
         }
 
