@@ -1,11 +1,8 @@
-package com.billbook.lib.router.interceptor
-
-import com.billbook.lib.router.Request
-import com.billbook.lib.router.Response
+package com.billbook.lib.router
 
 fun interface Interceptor {
 
-    fun intercept(chain: Chain):Response
+    fun intercept(chain: Chain): Response
 
     companion object {
         /**
@@ -23,7 +20,8 @@ fun interface Interceptor {
     }
 
     interface Chain {
-        fun request():Request
-        fun proceed(request: Request):Response
+        fun call(): RouteCall
+        fun request(): Request
+        fun proceed(request: Request): Response
     }
 }

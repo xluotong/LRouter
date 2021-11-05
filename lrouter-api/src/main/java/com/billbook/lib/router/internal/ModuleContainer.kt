@@ -1,5 +1,7 @@
 package com.billbook.lib.router.internal
 
+import com.billbook.lib.router.DefaultModule
+import com.billbook.lib.router.Module
 import com.billbook.lib.router.RouteInfo
 import com.billbook.lib.router.ServiceInfo
 import java.util.*
@@ -7,17 +9,6 @@ import java.util.*
 /**
  * @author xluotong@gmail.com
  */
-interface Module {
-    val name: String
-    val aware: Class<*>?
-}
-
-fun interface ModuleAware {
-    fun apply()
-}
-
-data class DefaultModule(override val name: String, override val aware: Class<*>?) : Module
-
 abstract class ModuleContainer(private val module: Module) : Module by module {
 
     abstract fun getServices(): List<ServiceInfo<*>>

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.IBinder
 import com.billbook.lib.router.annotation.Route
 import com.billbook.lib.router.annotation.Routes
-import com.billbook.lib.router.interceptor.Interceptor
 
 @Route("/main/home")
 class MainActivity : AppCompatActivity() {

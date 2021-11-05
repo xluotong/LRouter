@@ -1,7 +1,5 @@
 package com.billbook.lib.router
 
-import com.billbook.lib.router.interceptor.Interceptor
-
 
 /**
  * @author xluotong@gmail.com

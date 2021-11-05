@@ -66,7 +66,7 @@ class ServicesTask : DefaultTask() {
                     )
                 }
             } else {
-                variant.javaCompileProvider.map {
+                task.metaProvider = variant.javaCompileProvider.map {
                     File(it.destinationDirectory.asFile.orNull, META_DATA_PATH)
                 }
             }

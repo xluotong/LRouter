@@ -10,8 +10,8 @@ interface ResponseBuilder<T> {
 }
 
 class Response private constructor(builder: Builder) {
-    val code:Code = builder.code
-    val routeInfo:RouteInfo? = builder.routeInfo
+    val code: Code = builder.code
+    val routeInfo: RouteInfo? = builder.routeInfo
 
     fun newBuilder() = Builder().code(code)
         .routeInfo(routeInfo)
@@ -35,8 +35,11 @@ class Response private constructor(builder: Builder) {
     }
 
     enum class Code(val message: String) {
-        SUCCESS("Success"),
-        ROUTE_NOF_FOUND("Route info not found!"),
+        OK("Ok"),
+        NOF_FOUND("Route info not found!"),
+        REFUSE("Route request is refuse!"),
+        UNAUTHORIZED("Route request is unauthorized!"),
+        CONFLICT("Route match conflict!"),
         CANCEL("Cancel");
 
         override fun toString(): String {

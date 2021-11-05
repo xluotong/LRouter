@@ -1,6 +1,6 @@
 package com.billbook.lib.router.annotation
 
-import com.billbook.lib.router.interceptor.Interceptor
+import com.billbook.lib.router.Interceptor
 import kotlin.reflect.KClass
 
 private const val DEFAULT_GROUP = "Default"

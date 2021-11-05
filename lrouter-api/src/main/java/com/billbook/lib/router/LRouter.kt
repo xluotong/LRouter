@@ -1,35 +1,46 @@
 package com.billbook.lib.router
 
-import com.billbook.lib.router.internal.RouteContext
-import com.billbook.lib.router.internal.RouteContextImpl
+import com.billbook.lib.router.internal.ServiceProvider
 
 object LRouter {
 
-    private val context: RouteContext by lazy { RouteContextImpl() }
+    private lateinit var delegate: Delegate
 
-    @JvmStatic
-    fun <T> getService(clazz: Class<T>): T? {
-        return context.serviceCentral.getService(clazz)
+    fun initialize(delegate: Delegate) {
+        this.delegate = delegate
     }
 
     @JvmStatic
-    fun <T> getService(clazz: Class<T>, name: String): T? {
-        return context.serviceCentral.getService(clazz, name)
+    fun <T> getService(clazz: Class<T>): T? = delegate.getService(clazz)
+
+    @JvmStatic
+    fun <T> getService(clazz: Class<T>, name: String): T? = delegate.getService(clazz, name)
+
+    @JvmStatic
+    fun <T> getService(clazz: Class<T>, vararg params: Any): T? = delegate.getService(clazz, params)
+
+    @JvmStatic
+    fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {
+        return delegate.getServiceProvider(clazz)
     }
 
     @JvmStatic
-    fun <T> getService(clazz: Class<T>, vararg params: Any): T? {
-        return context.serviceCentral.getService(clazz, params)
-    }
+    fun newCall(request: Request): RouteCall = delegate.newCall(request)
 
     @JvmStatic
-    fun findRoute(uri: String): RouteInfo? {
-        TODO()
-    }
+    fun findRoute(uri: String): RouteInfo? = delegate.findRoute(uri)
 
     @JvmStatic
-    fun navigateTo(request: Request): Response {
-        TODO()
+    infix fun navigate(request: Request): Response = delegate.navigate(request)
+
+    interface Delegate {
+        fun <T> getService(clazz: Class<T>): T?
+        fun <T> getService(clazz: Class<T>, name: String): T?
+        fun <T> getService(clazz: Class<T>, vararg params: Any): T?
+        fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>?
+        fun newCall(request: Request): RouteCall
+        fun findRoute(uri: String): RouteInfo?
+        fun navigate(request: Request): Response
     }
 }
 
