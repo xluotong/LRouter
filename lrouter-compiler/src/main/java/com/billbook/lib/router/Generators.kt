@@ -1,6 +1,5 @@
 package com.billbook.lib.router
 
-import com.billbook.lib.router.internal.DefaultModule
 import com.billbook.lib.router.internal.ModuleContainer
 import com.squareup.javapoet.*
 import java.lang.StringBuilder

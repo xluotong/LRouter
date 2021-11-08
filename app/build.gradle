@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'lrouter'
 }
 
 android {
@@ -47,5 +48,6 @@ dependencies {
     implementation("androidx.work:work-runtime:2.7.0")
     implementation("androidx.work:work-runtime-ktx:2.7.0")
     implementation project(path: ':lrouter-api')
+    implementation project(path: ':lrouter-runtime')
     kapt project(path: ":lrouter-compiler")
 }

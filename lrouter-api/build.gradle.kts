@@ -31,7 +31,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "com.billbook.lib"
-            artifactId = "lrouter"
+            artifactId = "lrouter-api"
             version = "0.0.1"
             from(components["java"])
         }

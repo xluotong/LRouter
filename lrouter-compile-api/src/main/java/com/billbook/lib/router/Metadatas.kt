@@ -1,6 +1,6 @@
 package com.billbook.lib.router
 
-const val META_DATA_PATH = "META-INF/lrouters/metadata.json"
+const val META_DATA_PATH = "META-INF/lrouter/metadata.json"
 
 data class ModuleMeta(
     val name: String,

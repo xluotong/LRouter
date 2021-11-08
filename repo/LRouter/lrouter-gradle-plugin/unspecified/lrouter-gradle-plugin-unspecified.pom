@@ -18,14 +18,14 @@
     </dependency>
     <dependency>
       <groupId>com.billbook.lib</groupId>
-      <artifactId>lrouter</artifactId>
+      <artifactId>lrouter-api</artifactId>
       <version>0.0.1</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>LRouter</groupId>
+      <groupId>com.billbook.lib</groupId>
       <artifactId>lrouter-compile-api</artifactId>
-      <version>unspecified</version>
+      <version>0.0.1</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

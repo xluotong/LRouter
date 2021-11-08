@@ -1,0 +1,129 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.billbook.lib",
+    "module": "lrouter-api",
+    "version": "0.0.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "javax.inject",
+          "module": "javax.inject",
+          "version": {
+            "requires": "1"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ],
+          "thirdPartyCompatibility": {
+            "artifactSelector": {
+              "name": "javax.inject",
+              "type": "jar",
+              "extension": "jar"
+            }
+          }
+        },
+        {
+          "group": "javax.annotation",
+          "module": "jsr250-api",
+          "version": {
+            "requires": "1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "lrouter-api-0.0.1.jar",
+          "url": "lrouter-api-0.0.1.jar",
+          "size": 47709,
+          "sha512": "f9f18c1eae8cdf3cdd805f4b79b1c9ca9b7ff40447ba3a99ec1dbafb5f92b41b46caa7ef3ebc160b395fcb82198d32a004ace5984d5beedfe1606564b0303843",
+          "sha256": "e6a7a8647788f087ffad52e9c08f0d000e679f748786ba749ea77f66d96b6c19",
+          "sha1": "67660881685b25584c047b51ddf6c92b8cf29156",
+          "md5": "ec7b15833a74a61c6fe1064e4102f62e"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "javax.inject",
+          "module": "javax.inject",
+          "version": {
+            "requires": "1"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ],
+          "thirdPartyCompatibility": {
+            "artifactSelector": {
+              "name": "javax.inject",
+              "type": "jar",
+              "extension": "jar"
+            }
+          }
+        },
+        {
+          "group": "javax.annotation",
+          "module": "jsr250-api",
+          "version": {
+            "requires": "1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "lrouter-api-0.0.1.jar",
+          "url": "lrouter-api-0.0.1.jar",
+          "size": 47709,
+          "sha512": "f9f18c1eae8cdf3cdd805f4b79b1c9ca9b7ff40447ba3a99ec1dbafb5f92b41b46caa7ef3ebc160b395fcb82198d32a004ace5984d5beedfe1606564b0303843",
+          "sha256": "e6a7a8647788f087ffad52e9c08f0d000e679f748786ba749ea77f66d96b6c19",
+          "sha1": "67660881685b25584c047b51ddf6c92b8cf29156",
+          "md5": "ec7b15833a74a61c6fe1064e4102f62e"
+        }
+      ]
+    }
+  ]
+}

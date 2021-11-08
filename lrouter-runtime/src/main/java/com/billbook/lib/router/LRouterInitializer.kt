@@ -13,7 +13,7 @@ object LRouterInitializer {
 
     @JvmOverloads
     @JvmStatic
-    fun initialize(app: Application, configuration: Configuration) {
+    fun initialize(app: Application) {
         if (initialized.getAndSet(true)) return
         RouterRuntime.initialize(app)
     }
