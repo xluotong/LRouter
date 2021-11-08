@@ -1,6 +1,6 @@
 package com.billbook.lib.router
 
-import com.billbook.lib.router.internal.ServiceProvider
+import androidx.fragment.app.Fragment
 
 object LRouter {
 
@@ -28,9 +28,6 @@ object LRouter {
     fun newCall(request: Request): RouteCall = delegate.newCall(request)
 
     @JvmStatic
-    fun findRoute(uri: String): RouteInfo? = delegate.findRoute(uri)
-
-    @JvmStatic
     infix fun navigate(request: Request): Response = delegate.navigate(request)
 
     interface Delegate {
@@ -39,7 +36,6 @@ object LRouter {
         fun <T> getService(clazz: Class<T>, vararg params: Any): T?
         fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>?
         fun newCall(request: Request): RouteCall
-        fun findRoute(uri: String): RouteInfo?
         fun navigate(request: Request): Response
     }
 }
@@ -47,3 +43,17 @@ object LRouter {
 inline operator fun LRouter.get(uri: String): RouteInfo? = findRoute(uri)
 
 inline operator fun <T> LRouter.get(clazz: Class<T>): T? = getService(clazz)
+
+inline fun String.toRouteRequest() = Request.from(this)
+
+inline fun LRouter.getFragment(url: String): Fragment? {
+    return navigate(url.toRouteRequest().newBuilder().build()).fragment
+}
+
+inline fun LRouter.findRoute(url: String): RouteInfo? {
+    return navigate(
+        url.toRouteRequest().newBuilder()
+            .launchMode(Request.Mode.GET_ROUTE)
+            .build()
+    ).routeInfo
+}

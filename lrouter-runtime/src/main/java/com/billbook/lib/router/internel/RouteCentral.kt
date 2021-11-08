@@ -8,19 +8,15 @@ import com.billbook.lib.router.RouteInfo
 internal interface RouteCentral {
     fun register(routeInfo: RouteInfo)
 
-    fun findRoute(route: String): RouteInfo?
-
-    companion object {
-        val INSTANCE: RouteCentral = RouteCentralImpl()
-    }
+    operator fun get(url: String): RouteInfo
 }
 
-internal class RouteCentralImpl : RouteCentral {
+internal class DefaultRouteCentral : RouteCentral {
     private val routeTree: RouteTree = RouteTree()
 
     override fun register(routeInfo: RouteInfo) {
         routeTree.add(routeInfo)
     }
 
-    override fun findRoute(route: String): RouteInfo? = routeTree.search(route)
+    override operator fun get(url: String): RouteInfo = routeTree.findRoute(url)?:RouteInfo.EMPTY
 }

@@ -22,6 +22,14 @@ abstract class ModuleContainer(private val module: Module) : Module by module {
     fun withRoutes(action: (routes: List<RouteInfo>) -> Unit) = apply {
         action.invoke(getRoutes())
     }
+
+    fun withService(action: (service: ServiceInfo<*>) -> Unit) = apply {
+        getServices()?.forEach { action.invoke(it) }
+    }
+
+    fun withRoute(action: (route: RouteInfo) -> Unit) = apply {
+        getRoutes()?.forEach { action.invoke(it) }
+    }
 }
 
 class AModuleContainer : ModuleContainer {

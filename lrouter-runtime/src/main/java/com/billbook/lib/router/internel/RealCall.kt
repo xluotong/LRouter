@@ -4,6 +4,7 @@ import com.billbook.lib.router.Interceptor
 import com.billbook.lib.router.Request
 import com.billbook.lib.router.Response
 import com.billbook.lib.router.RouteCall
+import java.lang.IllegalStateException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -11,13 +12,13 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 internal class RealCall(
     private val client: RouteClient,
-    private val originalRequest: Request
+    private val request: Request
 ) : RouteCall {
 
     private val executed = AtomicBoolean()
     private val eventListener: EventListener = client.eventListenerFactory.create(this)
 
-    override fun request(): Request = originalRequest
+    override fun request(): Request = request
 
     override fun execute(): Response {
         check(executed.compareAndSet(false, true)) { "Already Executed" }
@@ -40,10 +41,18 @@ internal class RealCall(
     override fun isExecuted(): Boolean = executed.get()
 
     private fun getResponseWithInterceptorChain(): Response {
+        if (request.url.isEmpty()) throw IllegalStateException("route url is Empty!")
         val interceptors = mutableListOf<Interceptor>()
-        interceptors += BridgeInterceptor(client.routeCentral)
-        interceptors += LaunchInterceptor()
-        val chain = RealInterceptorChain(this, interceptors, 0, originalRequest)
-        return chain.proceed(originalRequest)
+        interceptors += PreparedInterceptor()
+        interceptors += BridgeInterceptor()
+        interceptors += LaunchInterceptor(client)
+        val chain = RealInterceptorChain(
+            this,
+            interceptors,
+            0,
+            request,
+            client.routeCentral[request.url]
+        )
+        return chain.proceed(request)
     }
 }

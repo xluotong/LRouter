@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/lrouter-compiler" />
             <option value="$PROJECT_DIR$/lrouter-gradle-plugin" />
             <option value="$PROJECT_DIR$/lrouter-runtime" />
+            <option value="$PROJECT_DIR$/lrouter-stub-androidx" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

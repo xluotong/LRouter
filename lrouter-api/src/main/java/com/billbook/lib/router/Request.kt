@@ -32,7 +32,8 @@ interface HasExtras<T> {
 }
 
 interface RequestBuilder<T> : HasExtras<T> {
-    fun url(url: String)
+    fun url(url: String): T
+    fun launchMode(mode: Request.Mode): T
     fun requestCode(code: Int): T
     fun addFlag(flag: Int): T
     fun setFlag(flag: Int): T
@@ -44,29 +45,47 @@ interface RequestBuilder<T> : HasExtras<T> {
 class Request private constructor(builder: Builder) {
 
     @get:JvmName("url")
-    val originalUrl: String = requireNotNull(builder.originalUrl) { "Route request uri must not be null!" }
+    val url: String = requireNotNull(builder.url) { "Route request uri must not be null!" }
+
     @get:JvmName("extras")
-    private val extras: Bundle? = builder.extras
+    val extras: Bundle? = builder.extras
+
     @get:JvmName("requestCode")
-    private val requestCode: Int? = builder.requestCode
-    @get:JvmName("flag")
-    private val flag: Int? = builder.flag
-    @get:JvmName("enterAnim") private val enterAnim: Int? = builder.enterAnim
+    val requestCode: Int? = builder.requestCode
+
+    @get:JvmName("flags")
+    val flags: Int? = builder.flags
+
+    @get:JvmName("enterAnim")
+    val enterAnim: Int? = builder.enterAnim
+
+    @get:JvmName("mode")
+    val mode: Mode = builder.launchMode
 
     fun newBuilder(): Builder = Builder().apply {
-        this@Request.originalUrl.let { this.url(it) }
+        this@Request.url.let { this.url(it) }
         this@Request.extras?.let { this.addExtras(it) }
         this@Request.requestCode?.let { this.requestCode(it) }
-        this@Request.flag?.let { this.setFlag(it) }
+        this@Request.flags?.let { this.setFlag(it) }
         this@Request.enterAnim?.let { this.enterAnim(it) }
+        this@Request.mode.let { this.launchMode(it) }
     }
 
     class Builder : RequestBuilder<Builder> {
         internal val extras: Bundle by lazy { Bundle() }
         internal var requestCode: Int? = null
-        internal var flag: Int? = null
+        internal var flags: Int? = null
         internal var enterAnim: Int? = null
-        internal var originalUrl: String? = null
+        internal var url: String? = null
+        internal var launchMode: Mode = Mode.START
+
+        override fun url(url: String): Builder = apply {
+            this.url = url
+        }
+
+        override fun launchMode(mode: Mode) = apply {
+            this.launchMode = mode
+        }
 
         override fun addExtra(key: String, value: Byte): Builder {
             extras.putByte(key, value)
@@ -161,10 +180,6 @@ class Request private constructor(builder: Builder) {
             TODO("Not yet implemented")
         }
 
-        override fun url(url: String) {
-            TODO("Not yet implemented")
-        }
-
         override fun requestCode(code: Int): Builder {
             TODO("Not yet implemented")
         }
@@ -188,6 +203,16 @@ class Request private constructor(builder: Builder) {
         override fun build(): Request {
             TODO("Not yet implemented")
         }
+    }
+
+    companion object {
+        fun from(url: String): Request {
+            return Request.Builder().url(url).build()
+        }
+    }
+
+    enum class Mode {
+        START, GET_ROUTE, TEST
     }
 }
 

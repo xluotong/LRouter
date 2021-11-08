@@ -13,4 +13,15 @@ data class ServiceInfo<T>(
     val cacheIn: CacheIn
 )
 
+/**
+ * Useful if it is lazy create service
+ */
+interface ServiceProvider<T> : Iterator<T?> {
+    fun get(): T?
+
+    fun get(vararg params: Any): T?
+
+    fun get(name: String):T?
+}
+
 

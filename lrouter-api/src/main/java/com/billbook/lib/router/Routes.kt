@@ -8,6 +8,7 @@ typealias RouteRequest = Request
 
 typealias RouteResponse = Request
 
+const val ROUTE_WILE_CHAR = "*"
 
 data class RouteInfo(
     val path: String,
@@ -15,15 +16,22 @@ data class RouteInfo(
     val host: String,
     val group: String,
     val groupDesc: String,
-    val desc:String,
-    val targetClass:Class<*>,
+    val desc: String,
+    val targetClass: Class<*>,
     val type: RouteType,
     val interceptors: List<Class<out Interceptor>>?,
-)
+) {
+    companion object {
+        val EMPTY = RouteInfo(
+            "", "", "", "", "", "", Any::class.java,
+            RouteType.PROVIDER, null
+        )
+    }
+}
 
-enum class RouteType(name: String) {
-    ACTIVITY("activity"),
-    FRAGMENT("fragment"),
-    PROVIDER("provider"),
-    SERVICE("service")
+enum class RouteType {
+    ACTIVITY,
+    FRAGMENT,
+    PROVIDER,
+    SERVICE
 }

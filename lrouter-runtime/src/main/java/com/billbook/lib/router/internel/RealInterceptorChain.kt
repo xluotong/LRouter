@@ -1,9 +1,6 @@
 package com.billbook.lib.router.internel
 
-import com.billbook.lib.router.Interceptor
-import com.billbook.lib.router.Request
-import com.billbook.lib.router.Response
-import com.billbook.lib.router.RouteCall
+import com.billbook.lib.router.*
 
 /**
  * @author xluotong@gmail.com
@@ -13,12 +10,14 @@ internal class RealInterceptorChain(
     private val interceptors: List<Interceptor>,
     private val index: Int,
     private val request: Request,
-) : Interceptor.Chain {
+    override val route: RouteInfo
+) : ChainInternal {
 
     internal fun copy(
         index: Int = this.index,
-        request: Request = this.request
-    ) = RealInterceptorChain(call, interceptors, index, request)
+        request: Request = this.request,
+        interceptors: List<Interceptor> = this.interceptors
+    ) = RealInterceptorChain(call, interceptors, index, request, route)
 
     override fun call(): RouteCall = call
 

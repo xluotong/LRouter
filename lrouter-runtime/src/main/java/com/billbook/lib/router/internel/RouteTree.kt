@@ -35,7 +35,7 @@ internal class RouteTree {
         }
     }
 
-    fun search(route: String): RouteInfo? {
+    fun findRoute(route: String): RouteInfo? {
         val uri = Uri.parse(route)
         val segments = mutableListOf(uri.scheme, uri.host, uri.pathSegments)
         var node = root

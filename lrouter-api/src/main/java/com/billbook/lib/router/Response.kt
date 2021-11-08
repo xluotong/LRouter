@@ -1,17 +1,23 @@
 package com.billbook.lib.router
 
+import androidx.fragment.app.Fragment
+
 /**
  * @author xluotong@gmail.com
  */
 interface ResponseBuilder<T> {
     fun code(code: Response.Code): T
+    fun message(message: String): T
     fun routeInfo(routeInfo: RouteInfo?): T
+    fun fragment(fragment: Fragment?): T
     fun build(): Response
 }
 
 class Response private constructor(builder: Builder) {
     val code: Code = builder.code
+    val message: String? = builder.message
     val routeInfo: RouteInfo? = builder.routeInfo
+    var fragment:Fragment? = builder.fragment
 
     fun newBuilder() = Builder().code(code)
         .routeInfo(routeInfo)
@@ -20,15 +26,23 @@ class Response private constructor(builder: Builder) {
 
         internal lateinit var code: Code
         internal var routeInfo: RouteInfo? = null
+        internal var message: String? = null
+        internal var fragment: Fragment? = null
 
-        override fun code(code: Code): Builder {
+        override fun code(code: Code): Builder = apply {
             this.code = code
-            return this
         }
 
-        override fun routeInfo(routeInfo: RouteInfo?): Builder {
+        override fun message(message: String): Builder = apply {
+            this.message = message
+        }
+
+        override fun routeInfo(routeInfo: RouteInfo?): Builder = apply {
             this.routeInfo = routeInfo
-            return this
+        }
+
+        override fun fragment(fragment: Fragment?): Builder = apply {
+            this.fragment = fragment
         }
 
         override fun build(): Response = Response(this)

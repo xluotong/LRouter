@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
+import androidx.fragment.app.Fragment
 import com.billbook.lib.router.annotation.Route
 import com.billbook.lib.router.annotation.Routes
 
