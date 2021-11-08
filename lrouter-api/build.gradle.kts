@@ -1,6 +1,7 @@
 plugins {
     java
     kotlin("jvm")
+    `maven-publish`
 }
 
 sourceSets {
@@ -17,4 +18,22 @@ dependencies {
     api("javax.annotation:jsr250-api:1.0")
     compileOnly("com.google.android:android:4.1.1.4")
     compileOnly(project(":lrouter-stub-androidx"))
+}
+
+publishing {
+    //配置maven仓库
+    repositories {
+        maven {
+            //当前项目根目录
+            url = uri("../repo")
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.billbook.lib"
+            artifactId = "lrouter"
+            version = "0.0.1"
+            from(components["java"])
+        }
+    }
 }

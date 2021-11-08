@@ -1,10 +1,10 @@
 package com.billbook.lib.router
 
 import com.android.build.gradle.AppExtension
-import com.android.build.gradle.internal.plugins.BasePlugin
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.BasePlugin
 import com.billbook.lib.router.task.CollectMetaTask
 import com.billbook.lib.router.task.ServicesTask
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -17,19 +17,18 @@ class RouterPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         project.plugins.withType(BasePlugin::class.java) {
-            with(it.extension) {
-                if (this is AppExtension) {
-                    this.applicationVariants.configureEach { variant ->
-                        val files = project.files()
-                        project.tasks.register(
-                            CollectMetaTask.ConfigAction(
-                                project,
-                                variant,
-                                files
-                            )
+            val extension: BaseExtension = project.extensions.getByName("android") as BaseExtension
+            if (extension is AppExtension) {
+                extension.applicationVariants.configureEach {
+                    val files = project.files()
+                    project.tasks.register(
+                        CollectMetaTask.ConfigAction(
+                            project,
+                            this,
+                            files
                         )
-                        project.tasks.register(ServicesTask.ConfigAction(project, variant, files))
-                    }
+                    )
+                    project.tasks.register(ServicesTask.ConfigAction(project, this, files))
                 }
             }
         }

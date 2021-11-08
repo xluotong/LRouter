@@ -88,8 +88,8 @@ internal fun ConfigurableFileCollection.fromVariant(variant: BaseVariant): Confi
     from(variant.runtimeConfiguration
         .incoming
         .artifactView {
-            it.attributes { container ->
-                container.attribute(
+            attributes {
+                attribute(
                     AndroidArtifacts.ARTIFACT_TYPE,
                     AndroidArtifacts.ArtifactType.JAVA_RES.type
                 )

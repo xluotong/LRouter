@@ -71,8 +71,11 @@ internal class DefaultServiceCentral : ServiceCentral {
             }
     }
 
+    @Synchronized
     override fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {
-        TODO()
+        return serviceTable[clazz]?.let {
+            DefaultServiceProvider(it as List<ServiceInfo<T>>)
+        }
     }
 }
 

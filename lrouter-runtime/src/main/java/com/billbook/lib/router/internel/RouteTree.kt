@@ -14,6 +14,7 @@ internal class RouteTree {
 
     fun add(routeInfo: RouteInfo) {
         val segments = mutableListOf(routeInfo.scheme, routeInfo.host) + routeInfo.path.split("/")
+            .filter { it.isNotEmpty() }
         var node = root
         segments.forEachIndexed { index, segment ->
             if (node.children == null) {
@@ -36,8 +37,7 @@ internal class RouteTree {
     }
 
     fun findRoute(route: String): RouteInfo? {
-        val uri = Uri.parse(route)
-        val segments = mutableListOf(uri.scheme, uri.host, uri.pathSegments)
+        val segments = Uri.parse(route).toRouteSegments()
         var node = root
         segments.forEachIndexed { index, segment ->
             val expectNode = node.children?.get(segment) ?: node.children?.get("*") ?: return null
@@ -59,4 +59,12 @@ internal class RouteTree {
 
         inline fun isLeaf() = children.isNullOrEmpty()
     }
+}
+
+private inline fun Uri.toRouteSegments(): List<String> {
+    val segments = mutableListOf<String>()
+    segments.add(scheme ?: EMPTY_STRING)
+    segments.add(host ?: EMPTY_STRING)
+    segments.addAll(pathSegments)
+    return segments
 }
