@@ -1,10 +1,20 @@
 package com.billbook.lib.router
 
 import org.gradle.api.Action
+import org.gradle.api.Task
 
 /**
  * @author xluotong@gmail.com
  */
-interface NamedAction<T> : Action<T> {
-    val name:String
+abstract class NamedPreConfigureAction<T : Task> : Action<T> {
+
+    abstract val name: String
+
+    open fun preConfigure(taskName: String) {
+
+    }
+
+    override fun execute(t: T) {
+
+    }
 }

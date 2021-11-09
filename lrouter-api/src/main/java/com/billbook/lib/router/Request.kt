@@ -200,9 +200,7 @@ class Request private constructor(builder: Builder) {
             TODO("Not yet implemented")
         }
 
-        override fun build(): Request {
-            TODO("Not yet implemented")
-        }
+        override fun build(): Request = Request(this)
     }
 
     companion object {

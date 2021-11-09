@@ -6,6 +6,14 @@ plugins {
 android {
     compileSdkVersion 31
 
+    sourceSets {
+        main {
+            java {
+                exclude("com/billbook/lib/router/generated/ModuleProvider.java")
+            }
+        }
+    }
+
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 31

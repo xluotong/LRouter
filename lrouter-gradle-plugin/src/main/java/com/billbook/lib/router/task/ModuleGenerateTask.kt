@@ -8,20 +8,35 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.jetbrains.kotlin.gradle.internal.Kapt3GradleSubplugin
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Type
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-class ServicesTask : DefaultTask() {
+@CacheableTask
+open class ModuleGenerateTask : DefaultTask() {
 
-    private lateinit var outputClassDir: File
-    private lateinit var otherLibMeta: FileCollection
-    private lateinit var metaProvider: Provider<File>
-    private lateinit var globalMeta: File
+    @get:OutputDirectory
+    lateinit var outputClassDir: File
+        private set
+
+    @get:OutputFile
+    lateinit var globalMeta: File
+        private set
+
+    @Classpath
+    @get:InputFiles
+    lateinit var otherLibMeta: FileCollection
+        private set
+
+    @Classpath
+    @get:InputFile
+    lateinit var metaProvider: Provider<File>
+        private set
 
     @TaskAction
     fun generate() {
@@ -41,32 +56,37 @@ class ServicesTask : DefaultTask() {
         private val project: Project,
         private val variant: ApplicationVariant,
         private val otherLibMeta: FileCollection,
-    ) : NamedAction<ServicesTask> {
+    ) : NamedPreConfigureAction<ModuleGenerateTask>() {
 
         private val outputClassDir
             get() = File(
                 project.buildDir,
-                "intermediates/lrouter/${variant.name}/registry"
+                "intermediates/lrouter/${variant.name}/generated"
             )
-        override val name: String get() = "generate${variant.name.capitalize()}LRouteRegistry"
 
-        override fun execute(task: ServicesTask) {
+        override val name: String get() = "generate${variant.name.capitalize()}RouteProvider"
+
+        override fun preConfigure(taskName: String) {
             variant.registerPostJavacGeneratedBytecode(
-                project.files(outputClassDir).builtBy(name)
+                project.files(outputClassDir).builtBy(taskName)
             )
+        }
+
+        override fun execute(task: ModuleGenerateTask) {
+            task.group = "lrouter"
             task.otherLibMeta = otherLibMeta
             task.outputClassDir = outputClassDir
             task.dependsOn(variant.javaCompileProvider)
-            task.globalMeta = File(project.buildDir, "outputs/lrouter/${variant.name}/meta.json")
-            if (project.plugins.hasPlugin("kotlin-kapt")) {
-                task.metaProvider = project.provider {
+            task.globalMeta = File(project.buildDir, "outputs/lrouter/${variant.name}/app_meta.json")
+            task.metaProvider = if (project.plugins.hasPlugin("kotlin-kapt")) {
+                project.provider {
                     File(
                         Kapt3GradleSubplugin.getKaptGeneratedClassesDir(project, variant.name),
                         META_DATA_PATH
                     )
                 }
             } else {
-                task.metaProvider = variant.javaCompileProvider.map {
+                variant.javaCompileProvider.map {
                     File(it.destinationDirectory.asFile.orNull, META_DATA_PATH)
                 }
             }
@@ -82,14 +102,14 @@ internal fun File.ensureDir() {
 }
 
 private fun List<ModuleMeta>.generateModuleProvider(dir: File) {
-    val file = File(dir, MODULES_CLASS.toPath()).also { it.ensureDir() }
+    val file = File(dir, "${MODULES_CLASS.toPath()}.class").also { it.ensureDir() }
     val classWriter = ClassWriter(0)
     classWriter.visit(
         Opcodes.V1_7,
-        Opcodes.ACC_PUBLIC or Opcodes.ACC_FINAL or Opcodes.ACC_SUPER,
+        Opcodes.ACC_PUBLIC or Opcodes.ACC_FINAL or Opcodes.ACC_SUPER or Opcodes.ACC_SYNTHETIC,
         MODULES_CLASS.toInternalName(),
         null,
-        "java/lang/object",
+        Type.getInternalName(Object::class.java),
         null
     )
     val methodVisitor = classWriter.visitMethod(Opcodes.ACC_PRIVATE, "<init>", "()V", null, null)
@@ -110,6 +130,7 @@ private fun List<ModuleMeta>.generateModuleProvider(dir: File) {
     modulesVisitor.visitCode()
     modulesVisitor.visitTypeInsn(Opcodes.NEW, "java/util/ArrayList")
     modulesVisitor.visitInsn(Opcodes.DUP)
+    modulesVisitor.visitLdcInsn(this.size)
     modulesVisitor.visitMethodInsn(
         Opcodes.INVOKESPECIAL,
         "java/util/ArrayList", "<init>", "()V", false

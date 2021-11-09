@@ -21,6 +21,10 @@ class MainActivity : AppCompatActivity() {
     fun login(v:View){
         LRouter.navigate("/user/login".toRouteRequest())
     }
+
+    fun register(v:View){
+        LRouter.navigate("example://main/user/register".toRouteRequest())
+    }
 }
 
 @Route("/main/second", interceptors = [LoginInterceptor::class, AuthInterceptor::class])

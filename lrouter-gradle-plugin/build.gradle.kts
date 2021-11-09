@@ -27,7 +27,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.billbook.gradle.plugin"
             artifactId = "lrouter"
-            version = "0.0.1"
+            version = "0.0.13"
             from(components["java"])
         }
     }

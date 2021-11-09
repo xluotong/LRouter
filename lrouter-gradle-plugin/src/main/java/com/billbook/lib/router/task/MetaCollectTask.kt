@@ -4,10 +4,7 @@ import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.TestVariant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
-import com.billbook.lib.router.META_DATA_PATH
-import com.billbook.lib.router.ModuleMeta
-import com.billbook.lib.router.NamedAction
-import com.billbook.lib.router.globalGson
+import com.billbook.lib.router.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.gradle.api.Action
@@ -15,7 +12,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
 import java.io.Reader
 import java.util.zip.ZipFile
@@ -25,10 +22,14 @@ internal inline fun <reified T> Gson.fromReader(reader: Reader): T = reader.use 
     return this.fromJson(reader, object : TypeToken<T>() {}.type)
 }
 
-class CollectMetaTask : DefaultTask() {
+@CacheableTask
+open class CollectMetaTask : DefaultTask() {
 
-    private lateinit var outputFile: File
-    private lateinit var inputFileCollection: FileCollection
+    @get:OutputFile
+    lateinit var outputFile: File
+    @Classpath
+    @get:InputFiles
+    lateinit var inputFileCollection: FileCollection
 
     @TaskAction
     fun collect() {
@@ -60,19 +61,25 @@ class CollectMetaTask : DefaultTask() {
         private val project: Project,
         private val variant: ApplicationVariant,
         private val fileCollection: ConfigurableFileCollection
-    ) : NamedAction<CollectMetaTask> {
+    ) : NamedPreConfigureAction<CollectMetaTask>() {
 
         private val outputFile: File
             get() = File(
                 project.buildDir,
-                "intermediates/lrouter/${variant.name}/other_meta.json"
+                "intermediates/lrouter/${variant.name}/output/other_meta.json"
             )
 
-        override val name: String get() = "collect${variant.name.capitalize()}LRouteMeta"
+        override val name: String get() = "collect${variant.name.capitalize()}RouteMeta"
+
+        override fun preConfigure(taskName: String) {
+            super.preConfigure(taskName)
+            fileCollection.builtBy(taskName)
+                .from(outputFile)
+        }
 
         override fun execute(task: CollectMetaTask) {
-            fileCollection.builtBy(name)
-                .from(outputFile)
+            task.group = "lrouter"
+            task.outputFile = outputFile
             task.inputFileCollection = project.files()
                 .fromVariant(variant)
                 .apply {

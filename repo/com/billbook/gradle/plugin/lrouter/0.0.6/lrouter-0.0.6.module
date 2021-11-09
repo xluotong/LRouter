@@ -1,0 +1,108 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "LRouter",
+    "module": "lrouter-gradle-plugin",
+    "version": "unspecified",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "lrouter-0.0.6.jar",
+          "url": "lrouter-0.0.6.jar",
+          "size": 36531,
+          "sha512": "7d5f9562d921fd9c40dfde88db5fe7b6fbf5caca641202e8da6ce59b523af1154f0bdd0abf9631a7beb925fc8f91f0104f047bb875931e03a2f5aa03916f2e93",
+          "sha256": "039bafd867624aab2e9ba3585c7ad894d70aeb303eb97a0d6a5883f930be2d72",
+          "sha1": "293c4e025bfcc1dcd23fcef81e0e9bcc6dafca28",
+          "md5": "f98da24eb15fd2b9e86194fd8cc83630"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "com.billbook.lib",
+          "module": "lrouter-api",
+          "version": {
+            "requires": "0.0.1"
+          }
+        },
+        {
+          "group": "com.billbook.lib",
+          "module": "lrouter-compile-api",
+          "version": {
+            "requires": "0.0.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-commons",
+          "version": {
+            "requires": "9.1"
+          }
+        },
+        {
+          "group": "com.android.tools.build",
+          "module": "gradle",
+          "version": {
+            "requires": "4.2.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "lrouter-0.0.6.jar",
+          "url": "lrouter-0.0.6.jar",
+          "size": 36531,
+          "sha512": "7d5f9562d921fd9c40dfde88db5fe7b6fbf5caca641202e8da6ce59b523af1154f0bdd0abf9631a7beb925fc8f91f0104f047bb875931e03a2f5aa03916f2e93",
+          "sha256": "039bafd867624aab2e9ba3585c7ad894d70aeb303eb97a0d6a5883f930be2d72",
+          "sha1": "293c4e025bfcc1dcd23fcef81e0e9bcc6dafca28",
+          "md5": "f98da24eb15fd2b9e86194fd8cc83630"
+        }
+      ]
+    }
+  ]
+}
