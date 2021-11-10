@@ -17,10 +17,14 @@ internal class RouteContext internal constructor(builder: Builder) {
     @get:JvmName("routeCentral")
     val routeCentral: RouteCentral = builder.routeCentral
 
+    @get:JvmName("serviceCentral")
+    val serviceCentral: ServiceCentral = builder.serviceCentral
+
     class Builder {
         internal lateinit var appContext: Context
         internal var eventListenerFactory: EventListener.Factory = EventListener.EMPTY.asFactory()
         internal lateinit var routeCentral: RouteCentral
+        internal lateinit var serviceCentral: ServiceCentral
 
         fun context(appContext: Context) = apply {
             this.appContext = appContext
@@ -32,6 +36,10 @@ internal class RouteContext internal constructor(builder: Builder) {
 
         fun routeCentral(routeCentral: RouteCentral) = apply {
             this.routeCentral = routeCentral
+        }
+
+        fun serviceCentral(serviceCentral: ServiceCentral) = apply {
+            this.serviceCentral = serviceCentral
         }
 
         fun build(): RouteContext = RouteContext(this)

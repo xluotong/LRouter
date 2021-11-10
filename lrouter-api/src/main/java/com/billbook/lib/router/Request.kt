@@ -11,7 +11,8 @@ interface RequestBuilder<T> {
     fun requestCode(code: Int): T
     fun context(fragment: Fragment): T
     fun context(context: Context): T
-    fun withExtras(action: (Bundle) -> Unit): T
+    fun withExtras(block: Bundle.() -> Unit): T
+    fun withOptions(block: Bundle.() -> Unit): T
     fun addFlags(flag: Int): T
     fun setFlags(flag: Int): T
     fun enterAnim(int: Int): T
@@ -26,6 +27,9 @@ class Request private constructor(builder: Builder) {
 
     @get:JvmName("extras")
     val extras: Bundle? = builder.extras
+
+    @get:JvmName("options")
+    val options: Bundle? = builder.options
 
     @get:JvmName("requestCode")
     val requestCode: Int? = builder.requestCode
@@ -58,10 +62,12 @@ class Request private constructor(builder: Builder) {
         this@Request.flags?.let { this.setFlags(it) }
         this@Request.enterAnim?.let { this.enterAnim(it) }
         this@Request.exitAnim?.let { this.exitAnim(it) }
+        this@Request.options?.let { this.withOptions { putAll(it) } }
     }
 
     class Builder : RequestBuilder<Builder> {
         internal var extras: Bundle? = null
+        internal var options: Bundle? = null
         internal var requestCode: Int? = null
         internal var flags: Int = 0
         internal var enterAnim: Int? = null
@@ -86,6 +92,11 @@ class Request private constructor(builder: Builder) {
         override fun withExtras(block: Bundle.() -> Unit): Builder = apply {
             if (extras == null) extras = Bundle()
             extras!!.apply(block)
+        }
+
+        override fun withOptions(block: Bundle.() -> Unit): Builder = apply {
+            if (options == null) options = Bundle()
+            options!!.apply(block)
         }
 
         override fun context(fragment: Fragment): Builder = apply {

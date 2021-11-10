@@ -18,6 +18,7 @@ internal object RouterInternal : LRouter.Delegate {
         this.application = application
         this.routeContext = RouteContext.Builder().context(application)
             .routeCentral(routeCentral)
+            .serviceCentral(serviceCentral)
             .build()
         // 加载路由和服务表
         initRoutes()

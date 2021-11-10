@@ -1,9 +1,6 @@
 package com.billbook.lib.router.internel
 
-import com.billbook.lib.router.Interceptor
-import com.billbook.lib.router.ROUTE_WILE_CHAR
-import com.billbook.lib.router.Response
-import com.billbook.lib.router.RouteInfo
+import com.billbook.lib.router.*
 
 /**
  * @author xluotong@gmail.com
@@ -21,6 +18,11 @@ class PreparedInterceptor : Interceptor {
                 .build()
         }
         (chain.call() as RouteCallInternal).withListener { onRouteHit() }
+        if (chain.request().mode == Request.Mode.ROUTE_ONLY) {
+            return Response.Builder().code(Response.Code.REFUSE)
+                .routeInfo(chain.route)
+                .build()
+        }
         return chain.proceed(chain.request())
     }
 }
