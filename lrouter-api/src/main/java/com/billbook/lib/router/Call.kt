@@ -13,16 +13,6 @@ interface RouteCall {
     fun execute(): Response
 
     /**
-     * Schedules the request to be executed at some point in the future.
-     */
-    fun enqueue(callback: (Response) -> Unit): Response
-
-    /**
-     * Cancels the request, if possible. Requests that are already complete cannot be canceled.
-     */
-    fun cancel()
-
-    /**
      * Returns true if this call has been either [executed][execute] or [enqueued][enqueue]. It is an
      * error to execute a call more than once.
      */

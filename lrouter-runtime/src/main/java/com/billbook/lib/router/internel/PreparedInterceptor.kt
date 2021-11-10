@@ -20,6 +20,7 @@ class PreparedInterceptor : Interceptor {
                 .message("Route path can not startWith $ROUTE_WILE_CHAR")
                 .build()
         }
+        (chain.call() as RouteCallInternal).withListener { onRouteHit() }
         return chain.proceed(chain.request())
     }
 }

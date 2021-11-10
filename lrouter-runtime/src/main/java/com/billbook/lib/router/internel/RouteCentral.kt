@@ -1,5 +1,6 @@
 package com.billbook.lib.router.internel
 
+import android.net.Uri
 import com.billbook.lib.router.RouteInfo
 
 /**
@@ -8,7 +9,7 @@ import com.billbook.lib.router.RouteInfo
 internal interface RouteCentral {
     fun register(routeInfo: RouteInfo)
 
-    operator fun get(url: String): RouteInfo
+    operator fun get(uri: Uri): RouteInfo
 }
 
 internal class DefaultRouteCentral : RouteCentral {
@@ -18,5 +19,5 @@ internal class DefaultRouteCentral : RouteCentral {
         routeTree.add(routeInfo)
     }
 
-    override operator fun get(url: String): RouteInfo = routeTree.findRoute(url)?:RouteInfo.EMPTY
+    override operator fun get(uri: Uri): RouteInfo = routeTree.findRoute(uri) ?: RouteInfo.EMPTY
 }

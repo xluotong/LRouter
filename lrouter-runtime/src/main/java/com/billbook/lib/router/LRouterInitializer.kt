@@ -1,7 +1,7 @@
 package com.billbook.lib.router
 
 import android.app.Application
-import com.billbook.lib.router.internel.RouterRuntime
+import com.billbook.lib.router.internel.RouterInternal
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -15,7 +15,7 @@ object LRouterInitializer {
     @JvmStatic
     fun initialize(app: Application) {
         if (initialized.getAndSet(true)) return
-        RouterRuntime.initialize(app)
+        RouterInternal.initialize(app)
     }
 }
 

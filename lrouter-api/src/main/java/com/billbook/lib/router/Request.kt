@@ -1,42 +1,19 @@
 package com.billbook.lib.router
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
-import java.io.Serializable
+import androidx.fragment.app.Fragment
 
-interface HasExtras<T> {
-    fun addExtra(key: String, value: Byte): T
-    fun addExtra(key: String, value: Short): T
-    fun addExtra(key: String, value: Int): T
-    fun addExtra(key: String, value: Long): T
-    fun addExtra(key: String, value: CharSequence): T
-    fun addExtra(key: String, value: Array<*>): T
-    fun addExtra(key: String, value: String): T
-    fun addExtra(key: String, value: Float): T
-    fun addExtra(key: String, value: Double): T
-    fun addExtra(key: String, value: Char): T
-    fun addExtra(key: String, value: Boolean): T
-    fun addExtra(key: String, value: Serializable): T
-    fun addExtra(key: String, value: Bundle): T
-    fun addExtra(key: String, value: Parcelable): T
-    fun addExtra(key: String, value: ByteArray): T
-    fun addExtra(key: String, value: ShortArray): T
-    fun addExtra(key: String, value: IntArray): T
-    fun addExtra(key: String, value: LongArray): T
-    fun addExtra(key: String, value: FloatArray): T
-    fun addExtra(key: String, value: DoubleArray): T
-    fun addExtra(key: String, value: CharArray): T
-    fun addExtra(key: String, value: BooleanArray): T
-    fun addExtras(bundle: Bundle): T
-}
-
-interface RequestBuilder<T> : HasExtras<T> {
-    fun url(url: String): T
+interface RequestBuilder<T> {
+    fun uri(url: Uri): T
     fun launchMode(mode: Request.Mode): T
     fun requestCode(code: Int): T
-    fun addFlag(flag: Int): T
-    fun setFlag(flag: Int): T
+    fun context(fragment: Fragment): T
+    fun context(context: Context): T
+    fun withExtras(action: (Bundle) -> Unit): T
+    fun addFlags(flag: Int): T
+    fun setFlags(flag: Int): T
     fun enterAnim(int: Int): T
     fun exitAnim(int: Int): T
     fun build(): Request
@@ -45,7 +22,7 @@ interface RequestBuilder<T> : HasExtras<T> {
 class Request private constructor(builder: Builder) {
 
     @get:JvmName("url")
-    val url: String = requireNotNull(builder.url) { "Route request uri must not be null!" }
+    val uri: Uri = requireNotNull(builder.uri) { "Route request uri must not be null!" }
 
     @get:JvmName("extras")
     val extras: Bundle? = builder.extras
@@ -53,176 +30,110 @@ class Request private constructor(builder: Builder) {
     @get:JvmName("requestCode")
     val requestCode: Int? = builder.requestCode
 
+    @get:JvmName("fragment")
+    val fragment: Fragment? = builder.fragment
+
+    @get:JvmName("context")
+    val context: Context? = builder.context
+
     @get:JvmName("flags")
     val flags: Int? = builder.flags
 
     @get:JvmName("enterAnim")
     val enterAnim: Int? = builder.enterAnim
 
+    @get:JvmName("exitAnim")
+    val exitAnim: Int? = builder.exitAnim
+
     @get:JvmName("mode")
     val mode: Mode = builder.launchMode
 
     fun newBuilder(): Builder = Builder().apply {
-        this@Request.url.let { this.url(it) }
-        this@Request.extras?.let { this.addExtras(it) }
-        this@Request.requestCode?.let { this.requestCode(it) }
-        this@Request.flags?.let { this.setFlag(it) }
-        this@Request.enterAnim?.let { this.enterAnim(it) }
+        this@Request.uri.let { this.uri(it) }
+        this@Request.extras?.let { this.withExtras { putAll(it) } }
         this@Request.mode.let { this.launchMode(it) }
+        this@Request.fragment?.let { this.context(it) }
+        this@Request.context?.let { this.context(it) }
+        this@Request.requestCode?.let { this.requestCode(it) }
+        this@Request.flags?.let { this.setFlags(it) }
+        this@Request.enterAnim?.let { this.enterAnim(it) }
+        this@Request.exitAnim?.let { this.exitAnim(it) }
     }
 
     class Builder : RequestBuilder<Builder> {
-        internal val extras: Bundle by lazy { Bundle() }
+        internal var extras: Bundle? = null
         internal var requestCode: Int? = null
-        internal var flags: Int? = null
+        internal var flags: Int = 0
         internal var enterAnim: Int? = null
-        internal var url: String? = null
+        internal var exitAnim: Int? = null
+        internal var uri: Uri? = null
         internal var launchMode: Mode = Mode.START
+        internal var fragment: Fragment? = null
+        internal var context: Context? = null
 
-        override fun url(url: String): Builder = apply {
-            this.url = url
+        override fun uri(uri: Uri): Builder = apply {
+            this.uri = uri
         }
 
         override fun launchMode(mode: Mode) = apply {
             this.launchMode = mode
         }
 
-        override fun addExtra(key: String, value: Byte): Builder {
-            extras.putByte(key, value)
-            return this
+        override fun requestCode(requestCode: Int): Builder = apply {
+            this.requestCode = requestCode
         }
 
-        override fun addExtra(key: String, value: Short): Builder {
-            TODO("Not yet implemented")
+        override fun withExtras(block: Bundle.() -> Unit): Builder = apply {
+            if (extras == null) extras = Bundle()
+            extras!!.apply(block)
         }
 
-        override fun addExtra(key: String, value: Int): Builder {
-            TODO("Not yet implemented")
+        override fun context(fragment: Fragment): Builder = apply {
+            this.fragment = fragment
         }
 
-        override fun addExtra(key: String, value: Long): Builder {
-            TODO("Not yet implemented")
+        override fun context(context: Context): Builder = apply {
+            this.context = context
         }
 
-        override fun addExtra(key: String, value: CharSequence): Builder {
-            TODO("Not yet implemented")
+        override fun addFlags(flag: Int): Builder = apply {
+            this.flags = this.flags or flag
         }
 
-        override fun addExtra(key: String, value: Array<*>): Builder {
-            TODO("Not yet implemented")
+        override fun setFlags(flags: Int): Builder = apply {
+            this.flags = flags
         }
 
-        override fun addExtra(key: String, value: String): Builder {
-            TODO("Not yet implemented")
+        override fun enterAnim(animId: Int): Builder = apply {
+            this.enterAnim = animId
         }
 
-        override fun addExtra(key: String, value: Float): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: Double): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: Char): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: Boolean): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: Serializable): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: Bundle): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: Parcelable): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: ByteArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: ShortArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: IntArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: LongArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: FloatArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: DoubleArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: CharArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtra(key: String, value: BooleanArray): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addExtras(bundle: Bundle): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun requestCode(code: Int): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun addFlag(flag: Int): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun setFlag(flag: Int): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun enterAnim(int: Int): Builder {
-            TODO("Not yet implemented")
-        }
-
-        override fun exitAnim(int: Int): Builder {
-            TODO("Not yet implemented")
+        override fun exitAnim(animId: Int): Builder = apply {
+            this.exitAnim = animId
         }
 
         override fun build(): Request = Request(this)
-    }
 
-    companion object {
-        fun from(url: String): Request {
-            return Request.Builder().url(url).build()
+        companion object {
+            inline fun from(uri: Uri): Builder = Builder().uri(uri)
+            inline fun from(url: String): Builder = Builder().uri(url.toUri())
         }
     }
 
+    companion object {
+        inline fun from(uri: Uri): Request = Builder().uri(uri).build()
+        inline fun from(url: String): Request = from(url.toUri())
+    }
+
     enum class Mode {
-        START, GET_ROUTE, TEST
+        START, ROUTE_ONLY, REACHABLE
     }
 }
 
-inline fun routeBuilderOf(uri: String, extra: Bundle? = null) {
+inline fun String.toUri(): Uri = Uri.parse(this)
+
+inline fun routeRequestOf(uri: String, action: (Bundle) -> Unit) {
     val uri = Uri.parse(uri)
 }
 
-//val request:Request.Builder()
-//        .addExtras(Bundle())
-//        .addExtra("A",1)
-//        .setRequestCode(1)
-//        .setFlag()
-//        .addFlag()
-//        .build()
-
+inline fun routeBuilderOf() = Request.Builder()

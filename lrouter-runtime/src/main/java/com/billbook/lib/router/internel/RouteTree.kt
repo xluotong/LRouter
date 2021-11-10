@@ -36,8 +36,8 @@ internal class RouteTree {
         }
     }
 
-    fun findRoute(route: String): RouteInfo? {
-        val segments = Uri.parse(route).toRouteSegments()
+    fun findRoute(uri: Uri): RouteInfo? {
+        val segments = uri.toRouteSegments()
         var node = root
         segments.forEachIndexed { index, segment ->
             val expectNode = node.children?.get(segment) ?: node.children?.get("*") ?: return null

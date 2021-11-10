@@ -10,23 +10,27 @@ import com.billbook.lib.router.RouteType
 /**
  * @author xluotong@gmail.com
  */
-internal class LaunchInterceptor(private val client: RouteClient) : Interceptor {
+internal class LaunchInterceptor(private val client: RouteContext) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         chain as ChainInternal
         val request = chain.request()
         val route = chain.route
-        if (request.mode == Request.Mode.TEST) {
+        if (request.mode == Request.Mode.REACHABLE) {
             return Response.Builder().code(Response.Code.OK)
                 .build()
         }
         val responseBuilder = Response.Builder()
+        val call = chain.call() as RouteCallInternal
         when (route.type) {
             RouteType.ACTIVITY -> {
+                call.withListener { onLaunchStart() }
                 val intent = Intent(client.appContext, route.targetClass)
                 request.flags?.let { intent.setFlags(it) }
+                request.extras?.let { intent.putExtras(it) }
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 client.appContext.startActivity(intent)
+                call.withListener { onLaunchEnd() }
             }
             RouteType.FRAGMENT -> {
                 responseBuilder.fragment(

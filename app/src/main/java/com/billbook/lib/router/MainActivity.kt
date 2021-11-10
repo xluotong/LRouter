@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import androidx.fragment.app.Fragment
 import com.billbook.lib.router.annotation.Route
 import com.billbook.lib.router.annotation.Routes
 
@@ -19,11 +18,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun login(v:View){
-        LRouter.navigate("/user/login".toRouteRequest())
+        LRouter.navigateTo("/user/login".toRouteRequest())
     }
 
     fun register(v:View){
-        LRouter.navigate("example://main/user/register".toRouteRequest())
+        LRouter.navigateTo("example://main/user/register".toRouteRequest())
     }
 }
 

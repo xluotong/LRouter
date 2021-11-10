@@ -7,17 +7,16 @@ import com.billbook.lib.router.generated.ModuleProvider
 /**
  * @author xluotong@gmail.com
  */
-internal object RouterRuntime : LRouter.Delegate {
+internal object RouterInternal : LRouter.Delegate {
 
     private lateinit var application: Application
     private val routeCentral: RouteCentral = DefaultRouteCentral()
     private val serviceCentral: ServiceCentral = DefaultServiceCentral()
-    private lateinit var client: RouteClient
+    private lateinit var routeContext: RouteContext
 
     fun initialize(application: Application) {
         this.application = application
-        this.client = RouteClient.Builder()
-            .context(application)
+        this.routeContext = RouteContext.Builder().context(application)
             .routeCentral(routeCentral)
             .build()
         // 加载路由和服务表
@@ -40,12 +39,20 @@ internal object RouterRuntime : LRouter.Delegate {
     }
 
     override fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {
-        TODO("Not yet implemented")
+        return serviceCentral.getServiceProvider(clazz)
     }
 
-    override fun newCall(request: Request): RouteCall = RealCall(client, request)
-
-    override fun navigate(request: Request): Response {
-        return newCall(request).execute()
+    override fun inject(any: Any) {
+        TODO()
     }
+
+    override fun findRoute(url: String): RouteInfo? {
+        return navigateTo(
+            Request.Builder.from(url).launchMode(Request.Mode.ROUTE_ONLY).build()
+        ).routeInfo
+    }
+
+    override fun newCall(request: Request): RouteCall = RealCall(routeContext, request)
+
+    override fun navigateTo(request: Request): Response = newCall(request).execute()
 }
