@@ -18,7 +18,8 @@ data class RouteMeta(
     val host: String,
     val path: String,
     val type: RouteType,
-    val interceptors: List<String>
+    val interceptors: List<String>,
+    val launcher:String = ""
 )
 
 data class ServiceMeta(

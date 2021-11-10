@@ -89,7 +89,7 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                     .addModifiers(Modifier.PUBLIC)
                     .addAnnotation(Override::class.java)
                     .addCode(
-                        if(moduleMeta.routeMetas.isEmpty()) {
+                        if (moduleMeta.routeMetas.isEmpty()) {
                             CodeBlock.builder().addStatement(
                                 "return \$T.emptyList()",
                                 Collections::class.java
@@ -102,9 +102,9 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                                 ArrayList::class.java
                             ).apply {
                                 moduleMeta.routeMetas.forEach { routeMeta ->
-                                    if(routeMeta.interceptors.isEmpty()){
+                                    if (routeMeta.interceptors.isEmpty()) {
                                         this.addStatement(
-                                            "routes.add(new \$T(\$S,\$S,\$S,\$S,\$S,\$S,\$T.class,\$T.\$L,\$L))",
+                                            "routes.add(new \$T(\$S,\$S,\$S,\$S,\$S,\$S,\$T.class,\$T.\$L,\$T.class,\$L))",
                                             RouteInfo::class.java,
                                             routeMeta.path,
                                             routeMeta.scheme,
@@ -115,13 +115,15 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                                             routeMeta.definition.toClassName(),
                                             RouteType::class.java,
                                             routeMeta.type,
+                                            if (routeMeta.launcher.isNotEmpty()) routeMeta.launcher.toClassName() else Launcher::class.java,
                                             "null"
                                         )
                                     } else {
-                                        val formatBuilder = StringBuilder("routes.add(new \$T(\$S,\$S,\$S,\$S,\$S,\$S,\$T.class,\$T.\$L,\$T.asList(")
-                                        routeMeta.interceptors.forEachIndexed { index,_ ->
+                                        val formatBuilder =
+                                            StringBuilder("routes.add(new \$T(\$S,\$S,\$S,\$S,\$S,\$S,\$T.class,\$T.\$L,\$T.class, \$T.asList(")
+                                        routeMeta.interceptors.forEachIndexed { index, _ ->
                                             formatBuilder.append("\$T.class")
-                                            if(index != routeMeta.interceptors.lastIndex){
+                                            if (index != routeMeta.interceptors.lastIndex) {
                                                 formatBuilder.append(", ")
                                             }
                                         }
@@ -138,8 +140,10 @@ private fun ModuleMeta.writeServiceContainerClassTo(filer: Filer) {
                                             routeMeta.definition.toClassName(),
                                             RouteType::class.java,
                                             routeMeta.type,
+                                            if (routeMeta.launcher.isNotEmpty()) routeMeta.launcher.toClassName() else Launcher::class.java,
                                             Arrays::class.java,
-                                            *routeMeta.interceptors.map { it.toClassName() }.toTypedArray()
+                                            *routeMeta.interceptors.map { it.toClassName() }
+                                                .toTypedArray()
                                         )
                                     }
                                 }

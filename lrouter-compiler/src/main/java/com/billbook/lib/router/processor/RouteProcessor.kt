@@ -12,6 +12,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Types
@@ -53,7 +54,7 @@ class RouteProcessor : MetaProcessor {
                     types.isSubtype(elementType, fragment) -> RouteType.FRAGMENT
                     else -> RouteType.PROVIDER
                 },
-                annotation.interceptorsType().distinct().map { it.javaClassName }
+                annotation.interceptorsType().distinct().map { it.javaClassName },
             ))
         }
         roundEnv.getElementsAnnotatedWith(Routes::class.java)?.forEach { element ->
@@ -78,7 +79,8 @@ class RouteProcessor : MetaProcessor {
                     route.path,
                     routeType,
                     (shareInterceptors + route.interceptorsType()
-                        .map { it.javaClassName }).distinct()
+                        .map { it.javaClassName }).distinct(),
+                    routes.launcherType().javaClassName
                 )
             })
         }
@@ -95,6 +97,15 @@ private fun Element.require(target: String) {
     errorIf("$target annotation target is a interface or an annotation type.") { kind.isInterface }
     errorIf("$target annotation target is a enum class.") { kind.isEnum() }
     errorIf("$target annotation target is a abstract class.") { modifiers.contains(Modifier.ABSTRACT) }
+}
+
+private fun Routes.launcherType(): TypeMirror {
+    return try {
+        launcher
+        error("Expected to get a MirroredTypeException!")
+    } catch (ex: MirroredTypeException) {
+        ex.typeMirror
+    }
 }
 
 private fun Routes.interceptorsType(): List<TypeMirror> {

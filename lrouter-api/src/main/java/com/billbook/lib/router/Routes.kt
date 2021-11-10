@@ -19,12 +19,13 @@ data class RouteInfo(
     val desc: String,
     val targetClass: Class<*>,
     val type: RouteType,
+    val launcher: Class<out Launcher>,
     val interceptors: List<Class<out Interceptor>>?,
 ) {
     companion object {
         val EMPTY = RouteInfo(
             "", "", "", "", "", "", Any::class.java,
-            RouteType.PROVIDER, null
+            RouteType.PROVIDER, Launcher::class.java, null
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.billbook.lib.router.annotation
 
 import com.billbook.lib.router.Interceptor
+import com.billbook.lib.router.Launcher
 import kotlin.reflect.KClass
 
 internal const val EMPTY = ""
@@ -11,7 +12,8 @@ annotation class Routes(
     val routes: Array<Route>,
     val name: String = EMPTY,
     val desc: String = EMPTY,
-    val interceptors: Array<KClass<out Interceptor>> = []
+    val interceptors: Array<KClass<out Interceptor>> = [],
+    val launcher: KClass<out Launcher> = Launcher::class
 )
 
 @Retention(AnnotationRetention.SOURCE)
