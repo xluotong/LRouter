@@ -12,6 +12,7 @@ import com.billbook.lib.router.annotation.Autowired
 import com.billbook.lib.router.annotation.Route
 import com.billbook.lib.router.annotation.Routes
 import javax.inject.Inject
+import javax.inject.Named
 
 @Routes(
     routes = [Route("/user/login")],
@@ -22,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     @Autowired(name = "fromId1")
     lateinit var fromId: String
 
+    @Named("location")
     @Inject
     lateinit var locationService:LocationService
 
@@ -31,7 +33,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        getIntent().getStringExtra("")
     }
 }
 

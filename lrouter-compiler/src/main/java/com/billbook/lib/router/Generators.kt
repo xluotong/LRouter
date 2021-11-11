@@ -220,9 +220,10 @@ private fun ModuleMeta.writeInjectorClassTo(filer: Filer) {
                             }
                             injectMeta.serviceList.forEach { field ->
                                 this.addStatement(
-                                    "target.${field.name} = \$T.getService(\$T.class)",
+                                    "target.${field.name} = \$T.getService(\$T.class,\$S)",
                                     LRouter::class.java,
-                                    field.type.toClassName()
+                                    field.type.toClassName(),
+                                    field.injectName
                                 )
                             }
                         }.build())

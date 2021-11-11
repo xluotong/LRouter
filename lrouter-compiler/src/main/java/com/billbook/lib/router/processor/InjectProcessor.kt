@@ -22,7 +22,7 @@ import javax.lang.model.util.Types
 class InjectProcessor : MetaProcessor {
 
     override val supportedAnnotations: Set<String>
-        get() = setOf(Inject::class.java.name, Autowired::class.java.name)
+        get() = setOf(Inject::class.java.name, Autowired::class.java.name, Named::class.java.name)
 
     override fun process(
         processingEnv: ProcessingEnvironment,
@@ -74,7 +74,7 @@ class InjectProcessor : MetaProcessor {
                 InjectMeta.Field(
                     element.simpleName.toString(),
                     element.getAnnotation(Named::class.java)?.value
-                        ?: element.simpleName.toString(),
+                        ?: "",
                     element.toAndroidTypeKind(types, elements)
                 )
             )
