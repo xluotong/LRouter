@@ -10,6 +10,8 @@ internal interface RouteCentral {
     fun register(routeInfo: RouteInfo)
 
     operator fun get(uri: Uri): RouteInfo
+
+    operator fun get(targetClass: Class<*>): List<RouteInfo>
 }
 
 internal class DefaultRouteCentral : RouteCentral {
@@ -20,4 +22,6 @@ internal class DefaultRouteCentral : RouteCentral {
     }
 
     override operator fun get(uri: Uri): RouteInfo = routeTree.findRoute(uri) ?: RouteInfo.EMPTY
+
+    override fun get(targetClass: Class<*>): List<RouteInfo> = routeTree.findRoute(targetClass)
 }

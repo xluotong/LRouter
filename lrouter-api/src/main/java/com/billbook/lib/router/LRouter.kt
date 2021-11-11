@@ -29,6 +29,9 @@ object LRouter {
     fun findRoute(url: String): RouteInfo? = delegate.findRoute(url)
 
     @JvmStatic
+    fun findRoute(target: Any): List<RouteInfo> = delegate.findRoute(target)
+
+    @JvmStatic
     fun newCall(request: Request): RouteCall = delegate.newCall(request)
 
     @JvmStatic
@@ -44,6 +47,7 @@ object LRouter {
         fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>?
         fun inject(any: Any)
         fun findRoute(url: String): RouteInfo?
+        fun findRoute(target: Any): List<RouteInfo>
         fun navigateTo(request: Request): Response
     }
 }

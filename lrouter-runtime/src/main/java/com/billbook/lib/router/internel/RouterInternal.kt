@@ -52,6 +52,8 @@ internal object RouterInternal : LRouter.Delegate {
         ).routeInfo
     }
 
+    override fun findRoute(target: Any): List<RouteInfo> = routeCentral[target::class.java]
+
     override fun newCall(request: Request): RouteCall = RealCall(routeContext, request)
 
     override fun navigateTo(request: Request): Response = newCall(request).execute()

@@ -1,5 +1,7 @@
 package com.billbook.lib.router
 
+import javax.inject.Provider
+
 enum class CacheIn {
     SINGLETON,
     UNDEFINED
@@ -16,12 +18,11 @@ data class ServiceInfo<T>(
 /**
  * Useful if it is lazy create service
  */
-interface ServiceProvider<T> : Iterator<T?> {
-    fun get(): T?
+interface ServiceProvider<T> : Iterator<T?>, Provider<T> {
 
     fun get(vararg params: Any): T?
 
-    fun get(name: String):T?
+    fun get(name: String): T?
 }
 
 

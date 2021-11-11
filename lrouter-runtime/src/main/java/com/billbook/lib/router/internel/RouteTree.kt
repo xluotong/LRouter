@@ -49,6 +49,23 @@ internal class RouteTree {
         return null
     }
 
+    fun findRoute(targetClass: Class<*>): List<RouteInfo> {
+        return mutableListOf<RouteInfo>().also {
+            findRouteInternal(targetClass, root, it)
+        }
+    }
+
+    private fun findRouteInternal(
+        targetClass: Class<*>,
+        node: Node,
+        results: MutableList<RouteInfo>
+    ) {
+        node.routeInfo?.let { if (it.targetClass == targetClass) results.add(it) }
+        node.children?.values?.forEach { node ->
+            findRouteInternal(targetClass, node, results)
+        }
+    }
+
     class Node(
         val value: String, // 路由中由'/'分隔的部分
         val routeInfo: RouteInfo? = null,
