@@ -12,6 +12,7 @@ internal object RouterInternal : LRouter.Delegate {
     private lateinit var application: Application
     private val routeCentral: RouteCentral = DefaultRouteCentral()
     private val serviceCentral: ServiceCentral = DefaultServiceCentral()
+    private val injector = RouteInjector()
     private lateinit var routeContext: RouteContext
 
     fun initialize(application: Application) {
@@ -43,9 +44,7 @@ internal object RouterInternal : LRouter.Delegate {
         return serviceCentral.getServiceProvider(clazz)
     }
 
-    override fun inject(any: Any) {
-        TODO()
-    }
+    override fun inject(any: Any) = injector.inject(any.javaClass, any)
 
     override fun findRoute(url: String): RouteInfo? {
         return navigateTo(

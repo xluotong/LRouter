@@ -3,6 +3,7 @@ package com.billbook.lib.router.internel
 import android.content.Context
 import androidx.fragment.app.Fragment
 import com.billbook.lib.router.Interceptor
+import com.billbook.lib.router.Launcher
 import com.billbook.lib.router.Response
 import com.billbook.lib.router.RouteType
 
@@ -18,10 +19,14 @@ internal class LaunchInterceptor(private val routeContext: RouteContext) : Inter
         val call = chain.call() as RouteCallInternal
         val fragment: Fragment? = request.fragment
         val context: Context = request.context ?: fragment?.activity ?: routeContext.appContext
-        val launcher = DefaultIntentLauncher()
         val responseBuilder = Response.Builder()
         when (route.type) {
             RouteType.ACTIVITY, RouteType.SERVICE -> {
+                val launcher = if (chain.route.launcher::class == Launcher::class) {
+                    DefaultIntentLauncher()
+                } else {
+                    runCatching { chain.route.launcher.newInstance() }.getOrNull() ?: DefaultIntentLauncher()
+                }
                 call.withListener { onLaunchStart() }
                 try {
                     val contract = DefaultContract(request, route)

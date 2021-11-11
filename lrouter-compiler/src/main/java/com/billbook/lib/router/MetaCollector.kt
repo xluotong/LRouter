@@ -10,6 +10,10 @@ interface MetaCollector {
     val hasMeta: Boolean
     val moduleMeta: ModuleMeta
 
+    fun addInjectField(target: InjectMeta.Target, field: InjectMeta.Field)
+
+    fun addAutowiredField(target: InjectMeta.Target, field: InjectMeta.Field)
+
     fun addService(meta: ServiceMeta)
 
     fun addServices(metas: List<ServiceMeta>)
@@ -22,18 +26,37 @@ interface MetaCollector {
 class MetaCollectorImpl : MetaCollector {
     private val _serviceMetas = mutableListOf<ServiceMeta>()
     private val _routeMetas = mutableListOf<RouteMeta>()
-    override val hasMeta: Boolean get() = _routeMetas.isNotEmpty() || _serviceMetas.isNotEmpty()
+    private val _injectMetas = mutableMapOf<String, InjectMeta>()
+    override val hasMeta: Boolean
+        get() = _routeMetas.isNotEmpty() || _serviceMetas.isNotEmpty() || _injectMetas.isNotEmpty()
 
     override val moduleMeta: ModuleMeta
         get() {
             val moduleName = requireNotNull(moduleName())
             return ModuleMeta(
                 moduleName,
-                 String.format(SERVICE_CONTAINER_CLASS_NAME_FORMAT, moduleName.capitalize()),
+                String.format(SERVICE_CONTAINER_CLASS_NAME_FORMAT, moduleName.capitalize()),
+                _injectMetas.values.toList(),
                 _routeMetas,
                 _serviceMetas
             )
         }
+
+    override fun addInjectField(
+        target: InjectMeta.Target,
+        field: InjectMeta.Field
+    ) {
+        _injectMetas.getOrPut(target.targetClass) { InjectMeta(target) }
+            .serviceList.add(field)
+    }
+
+    override fun addAutowiredField(
+        target: InjectMeta.Target,
+        field: InjectMeta.Field
+    ) {
+        _injectMetas.getOrPut(target.targetClass) { InjectMeta(target) }
+            .autowiredList.add(field)
+    }
 
     override fun addService(meta: ServiceMeta) {
         _serviceMetas.add(meta)

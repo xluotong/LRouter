@@ -42,7 +42,9 @@ class RouterProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment
     ): Boolean {
         if (roundEnv.processingOver()) {
-            if (mMetaCollector.hasMeta) mMetaCollector.moduleMeta.writeTo(processingEnv.filer)
+            if (mMetaCollector.hasMeta) mMetaCollector.moduleMeta.writeTo(
+                processingEnv.filer
+            )
         } else {
             mMetaProcessors.forEach {
                 it.process(

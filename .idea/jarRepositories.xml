@@ -106,5 +106,10 @@
       <option name="name" value="maven" />
       <option name="url" value="file:/$PROJECT_DIR$/lrouter-gradle-plugin/repo" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/example-module/repo" />
+    </remote-repository>
   </component>
 </project>

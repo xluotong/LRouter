@@ -5,6 +5,7 @@ const val META_DATA_PATH = "META-INF/lrouter/metadata.json"
 data class ModuleMeta(
     val name: String,
     val container: String, // Module container class name
+    val injectMeta: List<InjectMeta>,
     val routeMetas: List<RouteMeta>,
     val serviceMetas: List<ServiceMeta>
 )
@@ -19,8 +20,32 @@ data class RouteMeta(
     val path: String,
     val type: RouteType,
     val interceptors: List<String>,
-    val launcher:String = ""
+    val launcher: String = ""
 )
+
+data class InjectMeta(
+    val target: Target,
+    val autowiredList: MutableList<Field> = mutableListOf(),
+    val serviceList: MutableList<Field> = mutableListOf(),
+) {
+
+    data class Target(
+        val packageName: String,
+        val targetClass: String,
+        val type: TargetType,
+    )
+
+    data class Field(
+        val name: String,
+        val injectName: String,
+        val type: String,
+        val required: Boolean = false
+    )
+
+    enum class TargetType {
+        ACTIVITY, FRAGMENT, SERVICE
+    }
+}
 
 data class ServiceMeta(
     val definition: String,

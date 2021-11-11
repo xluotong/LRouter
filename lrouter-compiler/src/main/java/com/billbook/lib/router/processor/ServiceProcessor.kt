@@ -3,6 +3,8 @@ package com.billbook.lib.router.processor
 import com.billbook.lib.router.MetaCollector
 import com.billbook.lib.router.MetaProcessor
 import com.billbook.lib.router.ServiceMeta
+import com.billbook.lib.router.annotation.Route
+import com.billbook.lib.router.annotation.Routes
 import com.billbook.lib.router.annotation.Service
 import com.billbook.lib.router.annotation.Services
 import com.google.auto.service.AutoService
@@ -19,7 +21,6 @@ import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
-import kotlin.reflect.KClass
 
 /**
  * @author xluotong@gmail.com
@@ -37,22 +38,18 @@ class ServiceProcessor : MetaProcessor {
         collector: MetaCollector
     ) {
         roundEnv.getElementsAnnotatedWith(Service::class.java)?.forEach { element ->
-            element.requireElement(processingEnv.typeUtils)
+            element.require("@Service", processingEnv.elementUtils, processingEnv.typeUtils)
             collector.addService(
                 element.getAnnotation(Service::class.java).toServiceMeta(element as TypeElement)
             )
         }
         roundEnv.getElementsAnnotatedWith(Services::class.java)?.forEach { element ->
-            element.requireElement(processingEnv.typeUtils)
+            element.require("@Services", processingEnv.elementUtils, processingEnv.typeUtils)
             collector.addServices(element.getAnnotation(Services::class.java).services.map {
-                it.toServiceMeta(
-                    element as TypeElement
-                )
+                it.toServiceMeta(element as TypeElement)
             })
             collector.addServices(element.getAnnotation(Services::class.java).serviceType().map {
-                it.toServiceMeta(
-                    element as TypeElement
-                )
+                it.toServiceMeta(element as TypeElement)
             })
         }
     }
@@ -81,13 +78,17 @@ private fun TypeMirror.toServiceMeta(typeElement: TypeElement): ServiceMeta {
     )
 }
 
-private fun Element.requireElement(types: Types): Element {
-    if (hasAnnotation(Services::class.java) && hasAnnotation(Service::class.java)) {
-        error("Services and Services cannot be used at the same time, please use Services to merge")
+private fun Element.require(target: String, elements: Elements, types: Types) {
+    errorIf("Annotation of Services and Service cannot be used at the same time, please use Services to merge") {
+        hasAnnotation(
+            Services::class.java
+        ) && hasAnnotation(Service::class.java)
     }
-    if (kind.isInterface) error("Services annotation target is a interface or an annotation type.！")
-    if (kind == ElementKind.ENUM) error("Services annotation target is a enum class！")
-    if (modifiers.contains(Modifier.ABSTRACT)) error("Services annotation target is a abstract class！")
+    errorIf("$target annotation target ${asType()} is a interface or an annotation type.") { kind.isInterface }
+    errorIf("$target annotation target ${asType()} must be a class.") { !kind.isClass }
+    errorIf("$target annotation target ${asType()} is a enum class.") { isEnum() }
+    errorIf("$target annotation target ${asType()} is a abstract class.") { isAbstract() }
+    errorIf("$target annotation target ${asType()} is a inner class.") { this.isInnerClass(elements) }
     getAnnotation(Services::class.java)?.serviceType()?.find {
         !types.isAssignable(asType(), it)
     }?.let { error("${this.simpleName} does not implement ${it.javaClassName}！") }
@@ -97,8 +98,6 @@ private fun Element.requireElement(types: Types): Element {
     getAnnotation(Service::class.java)?.serviceType()?.takeIf {
         !types.isAssignable(asType(), it)
     }?.let { error("${this.simpleName} does not implement ${it.javaClassName}！") }
-    // TODO 判断是不是内部类
-    return this
 }
 
 private fun Service.serviceType(): TypeMirror {
@@ -118,7 +117,5 @@ private fun Services.serviceType(): List<TypeMirror> {
         ex.typeMirrors
     }
 }
-
-internal val TypeMirror.javaClassName: String get() = ((this as DeclaredType).asElement() as TypeElement).qualifiedName.toString()
 
 
