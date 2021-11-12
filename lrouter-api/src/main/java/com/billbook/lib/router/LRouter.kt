@@ -2,6 +2,7 @@ package com.billbook.lib.router
 
 import android.net.Uri
 import androidx.fragment.app.Fragment
+import kotlin.reflect.KProperty
 
 object LRouter {
 
@@ -52,8 +53,6 @@ object LRouter {
     }
 }
 
-//inline operator fun <T> LRouter.get(uriString: String): T? = findRoute(uri)
-
 inline operator fun <T> LRouter.get(clazz: Class<T>): T? = getService(clazz)
 
 inline fun String.toRouteRequest(): Request = Request.from(this)
@@ -65,3 +64,10 @@ inline fun LRouter.getFragment(uri: Uri): Fragment? {
 }
 
 inline fun LRouter.getFragment(url: String): Fragment? = getFragment(url.toUri())
+
+inline operator fun <T, reified R> LRouter.getValue(receiver: T?, property: KProperty<*>): R? {
+    return getService(R::class.java, property.name)
+}
+
+
+

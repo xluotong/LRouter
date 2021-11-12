@@ -49,4 +49,5 @@ dependencies {
     implementation project(path: ':lrouter-api')
     implementation project(path: ':lrouter-runtime')
     kapt project(path: ":lrouter-compiler")
+    implementation "androidx.startup:startup-runtime:1.1.0"
 }

@@ -27,11 +27,14 @@ class LoginActivity : AppCompatActivity() {
     @Inject
     lateinit var locationService:LocationService
 
+    val locationService2:LocationService? by LRouter
+
     @Autowired
     lateinit var toId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        LRouter.inject(this)
         setContentView(R.layout.activity_login)
     }
 }
