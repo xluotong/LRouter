@@ -1,6 +1,5 @@
 plugins {
     `kotlin-dsl`
-    `maven-publish`
     kotlin("jvm")
 }
 
@@ -22,21 +21,5 @@ dependencies {
     compileOnly(gradleApi())
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.billbook.gradle.plugin"
-            artifactId = "lrouter"
-            version = "0.0.13"
-            from(components["java"])
-        }
-    }
-
-    repositories {
-        maven {
-            // change to point to your repo, e.g. http://my.org/repo
-            url = uri("../repo")
-        }
-    }
-}
+apply(from = "../maven_publish.gradle")
 

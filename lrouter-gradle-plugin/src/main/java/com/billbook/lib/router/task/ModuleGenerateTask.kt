@@ -55,7 +55,7 @@ open class ModuleGenerateTask : DefaultTask() {
     class ConfigAction(
         private val project: Project,
         private val variant: ApplicationVariant,
-        private val otherLibMeta: FileCollection,
+        private val otherLibMeta: FileCollection
     ) : NamedPreConfigureAction<ModuleGenerateTask>() {
 
         private val outputClassDir
@@ -133,7 +133,7 @@ private fun List<ModuleMeta>.generateModuleProvider(dir: File) {
     modulesVisitor.visitLdcInsn(this.size)
     modulesVisitor.visitMethodInsn(
         Opcodes.INVOKESPECIAL,
-        "java/util/ArrayList", "<init>", "()V", false
+        "java/util/ArrayList", "<init>", "(I)V", false
     )
     modulesVisitor.visitVarInsn(Opcodes.ASTORE, 0)
     this.forEach { moduleMeta ->

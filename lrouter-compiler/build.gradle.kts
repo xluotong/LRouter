@@ -17,3 +17,5 @@ dependencies {
     kapt("com.google.auto.service:auto-service:1.0-rc7")
     implementation("com.squareup.okio:okio:2.2.1")
 }
+
+apply(from = "../maven_publish.gradle")

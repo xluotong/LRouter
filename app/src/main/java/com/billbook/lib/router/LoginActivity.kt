@@ -23,7 +23,6 @@ class LoginActivity : AppCompatActivity() {
     @Autowired(name = "fromId1")
     lateinit var fromId: String
 
-    @Named("location")
     @Inject
     lateinit var locationService:LocationService
 

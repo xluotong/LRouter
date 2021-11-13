@@ -37,10 +37,10 @@ open class CollectMetaTask : DefaultTask() {
             .parallelStream()
             .filter { it.exists() }
             .map {
-                if (it.endsWith(".jar")) {
+                if (it.name.endsWith(".jar")) {
                     ZipFile(it).use { file ->
                         file.getEntry(META_DATA_PATH)?.let { entry ->
-                            globalGson.fromReader<List<ModuleMeta>>(
+                            globalGson.fromReader<ModuleMeta>(
                                 file.getInputStream(entry).reader()
                             )
                         }
@@ -48,7 +48,7 @@ open class CollectMetaTask : DefaultTask() {
                 } else {
                     val file = File(it, META_DATA_PATH.replace('/', File.separatorChar))
                     if (file.exists()) {
-                        globalGson.fromReader<List<ModuleMeta>>(file.reader())
+                        globalGson.fromReader<ModuleMeta>(file.reader())
                     } else null
                 }
             }
