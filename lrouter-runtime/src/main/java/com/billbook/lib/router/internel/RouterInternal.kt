@@ -28,7 +28,8 @@ internal object RouterInternal : LRouter.Delegate {
 
     private fun initRoutes() {
         ModuleProvider.modules().forEach { moduleContainer ->
-            moduleContainer.withRoute { routeCentral.register(it) }
+            moduleContainer.withRoutes { routeCentral.register(it) }
+            moduleContainer.withServices { serviceCentral.register(it) }
         }
     }
 

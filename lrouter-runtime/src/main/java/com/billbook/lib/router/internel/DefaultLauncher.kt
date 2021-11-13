@@ -10,6 +10,7 @@ import com.billbook.lib.router.Launcher
 import com.billbook.lib.router.Request
 import com.billbook.lib.router.RouteInfo
 import com.billbook.lib.router.RouteType
+import java.lang.RuntimeException
 
 /**
  * @author xluotong@gmail.com
@@ -32,6 +33,7 @@ internal class DefaultIntentLauncher : Launcher {
         with(contract.request) {
             flags?.let { intent.setFlags(it) }
             flags?.let { intent.setFlags(it) }
+            extras?.let { intent.putExtras(it) }
         }
         return intent
     }
@@ -49,6 +51,8 @@ internal class DefaultIntentLauncher : Launcher {
                     request.requestCode!!,
                     request.options
                 )
+            } else {
+                throw RuntimeException("Unresovled context of request")
             }
         } else {
             if (context !is ContextThemeWrapper) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

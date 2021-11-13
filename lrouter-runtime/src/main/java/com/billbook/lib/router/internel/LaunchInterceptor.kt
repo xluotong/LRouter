@@ -25,7 +25,8 @@ internal class LaunchInterceptor(private val routeContext: RouteContext) : Inter
                 val launcher = if (chain.route.launcher::class == Launcher::class) {
                     DefaultIntentLauncher()
                 } else {
-                    runCatching { chain.route.launcher.newInstance() }.getOrNull() ?: DefaultIntentLauncher()
+                    runCatching { chain.route.launcher.newInstance() }.getOrNull()
+                        ?: DefaultIntentLauncher()
                 }
                 call.withListener { onLaunchStart() }
                 try {
@@ -40,7 +41,7 @@ internal class LaunchInterceptor(private val routeContext: RouteContext) : Inter
                     Fragment.instantiate(
                         context,
                         route.targetClass.canonicalName
-                    )
+                    ).apply { request.extras?.let { this.arguments = it } }
                 )
             }
         }
