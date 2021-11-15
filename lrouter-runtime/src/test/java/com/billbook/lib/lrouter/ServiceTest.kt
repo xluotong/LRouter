@@ -31,10 +31,9 @@ class ServiceTest {
                 CacheIn.UNDEFINED
             )
         )
-        val instance = service.getService(LocationService::class.java, 1)
-        assert(instance != null)
-        assert(service.getService(LocationService::class.java) != null)
-        assert(service.getService(LocationService::class.java, 1, 2) != null)
+//        assert(service.getService(LocationService::class.java) != null)
+        assert(service.getService(LocationService::class.java, 122)!!.getLocation() == "122")
+        println(service.getService(LocationService::class.java, 122)!!.getLocation())
         assert(
             service.getService(LocationService::class.java, "locationService2")!!
                 .getLocation() == "location2"
@@ -59,14 +58,6 @@ class LocationServiceImpl : LocationService {
 
     constructor(str: Int) {
         this.str = str
-    }
-
-    constructor() {
-
-    }
-
-    constructor(str: Int, str2: Int) {
-
     }
 
     override fun getLocation(): String {

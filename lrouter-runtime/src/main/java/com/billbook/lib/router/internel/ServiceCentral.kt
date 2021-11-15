@@ -52,7 +52,7 @@ internal class DefaultServiceCentral : ServiceCentral {
     @Synchronized
     override fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {
         return serviceTable[clazz]?.let {
-            DefaultServiceProvider(clazz, it as List<ServiceInfo<T>>, serviceCache)
+            DefaultServiceProvider(clazz, it as List<ServiceInfo<T>>)
         }
     }
 
@@ -83,44 +83,34 @@ internal interface ServiceCache {
 internal class DefaultServiceProvider<T>(
     override val declaringClass: Class<T>,
     private val services: List<ServiceInfo<T>>,
-    private val cache: ServiceCache
 ) : ServiceProvider<T> {
-    override fun get(): T? = services.firstOrNull()?.service?.newInstance()
+    override fun get(): T? = services.firstOrNull()?.newInstance()
 
     override fun get(vararg params: Any): T? {
         return this.services.mapOrNull {
-            cache.getOrPut(it) { it.service.createInstance(it.declaring, *params) }
+            it.service.createInstance(it.declaring, params)
         }
     }
 
     override fun get(name: String): T? {
         return services.find { it.name == name }
-            ?.let { cache.getOrPut(it) { it.newInstance() } }
+            ?.let { it.newInstance() }
     }
 
     override fun get(name: String, vararg params: Any): T? {
         return services.find { it.name == name }
-            ?.let {
-                cache.getOrPut(it) {
-                    it.service.createInstance(it.declaring, params)
-                }
-            }
+            ?.let { it.service.createInstance(it.declaring, params) }
     }
 
-    override fun iterator(): Iterator<T?> = ServiceIterator(services.iterator(), cache)
+    override fun iterator(): Iterator<T?> = ServiceIterator(services.iterator())
 
     class ServiceIterator<T>(
         private val infoIterator: Iterator<ServiceInfo<T>>,
-        private val cache: ServiceCache
     ) : Iterator<T?> {
 
         override fun hasNext(): Boolean = infoIterator.hasNext()
 
-        override fun next(): T? {
-            return infoIterator.next()?.let { info ->
-                cache.getOrPut(info) { info.newInstance() }
-            }
-        }
+        override fun next(): T? = infoIterator.next()?.newInstance()
     }
 }
 
@@ -132,9 +122,9 @@ private inline fun <T> ServiceInfo<T>.newInstance(): T? {
     }
 }
 
-private inline fun <T> Class<out T>.createInstance(
+private fun <T> Class<out T>.createInstance(
     declaringClass: Class<T>,
-    vararg params: Any
+    params: Array<out Any>
 ): T? {
     return constructors.mapOrNull {
         try {
