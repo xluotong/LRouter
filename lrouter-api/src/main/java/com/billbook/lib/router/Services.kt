@@ -8,8 +8,8 @@ enum class CacheIn {
 }
 
 data class ServiceInfo<T>(
-    val definition: Class<out T>,
-    val service: Class<T>,
+    val declaring: Class<T>,
+    val service: Class<out T>,
     val name: String,
     val desc: String,
     val cacheIn: CacheIn
@@ -18,13 +18,15 @@ data class ServiceInfo<T>(
 /**
  * Useful if it is lazy create service
  */
-interface ServiceProvider<T> : Provider<T> {
+interface ServiceProvider<T> : Provider<T>, Iterable<T?> {
 
-    val serviceClazz:Class<T>
+    val declaringClass: Class<T>
 
     fun get(vararg params: Any): T?
 
     fun get(name: String): T?
+
+    fun get(name: String, vararg params: Any): T?
 }
 
 
