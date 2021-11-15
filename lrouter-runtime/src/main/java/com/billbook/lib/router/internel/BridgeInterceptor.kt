@@ -17,7 +17,7 @@ internal class BridgeInterceptor : Interceptor {
         } ?: listOf()
         if (extInterceptor.isEmpty()) {
             val response = chain.proceed(request)
-            return response.newBuilder().routeInfo(chain.route).build()
+            return response.newBuilder().build()
         }
         extInterceptor += ContinueInterceptor(chain)
         val newChain = RealInterceptorChain(

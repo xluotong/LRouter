@@ -19,6 +19,8 @@ object LRouterInitializer {
     }
 }
 
+// 1. default redirect page
+// 2. async load route table
 class Configuration {
 
 }

@@ -20,7 +20,9 @@ class Response private constructor(builder: Builder) {
     var fragment:Fragment? = builder.fragment
 
     fun newBuilder() = Builder().code(code)
+        .apply { this@Response.message?.let { message(it) } }
         .routeInfo(routeInfo)
+        .fragment(fragment)
 
     class Builder : ResponseBuilder<Builder> {
 
@@ -54,6 +56,8 @@ class Response private constructor(builder: Builder) {
         REFUSE("Route request is refuse!"),
         UNAUTHORIZED("Route request is unauthorized!"),
         CONFLICT("Route match conflict!"),
+        FAILURE("Route launch failure!"),
+        UNSUPPORTED("Route unsupported!"),
         CANCEL("Cancel");
 
         override fun toString(): String {

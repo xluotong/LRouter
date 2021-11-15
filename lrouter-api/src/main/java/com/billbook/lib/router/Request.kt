@@ -13,6 +13,7 @@ interface RequestBuilder<T> {
     fun context(context: Context): T
     fun withExtras(block: Bundle.() -> Unit): T
     fun withOptions(block: Bundle.() -> Unit): T
+    fun redirectRequest(request: Request?): T
     fun addFlags(flag: Int): T
     fun setFlags(flag: Int): T
     fun enterAnim(int: Int): T
@@ -52,6 +53,9 @@ class Request private constructor(builder: Builder) {
     @get:JvmName("mode")
     val mode: Mode = builder.launchMode
 
+    @get:JvmName("redirectRequest")
+    val redirectRequest: Request? = builder.redirectRequest
+
     fun newBuilder(): Builder = Builder().apply {
         this@Request.uri.let { this.uri(it) }
         this@Request.extras?.let { this.withExtras { putAll(it) } }
@@ -63,6 +67,7 @@ class Request private constructor(builder: Builder) {
         this@Request.enterAnim?.let { this.enterAnim(it) }
         this@Request.exitAnim?.let { this.exitAnim(it) }
         this@Request.options?.let { this.withOptions { putAll(it) } }
+        this@Request.redirectRequest?.let { this.redirectRequest(it) }
     }
 
     class Builder : RequestBuilder<Builder> {
@@ -76,6 +81,7 @@ class Request private constructor(builder: Builder) {
         internal var launchMode: Mode = Mode.START
         internal var fragment: Fragment? = null
         internal var context: Context? = null
+        internal var redirectRequest: Request? = null
 
         override fun uri(uri: Uri): Builder = apply {
             this.uri = uri
@@ -113,6 +119,10 @@ class Request private constructor(builder: Builder) {
 
         override fun setFlags(flags: Int): Builder = apply {
             this.flags = flags
+        }
+
+        override fun redirectRequest(request: Request?): Builder = apply {
+            this.redirectRequest = request
         }
 
         override fun enterAnim(animId: Int): Builder = apply {

@@ -9,7 +9,7 @@ import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.Diagnostic
 
-internal const val SERVICE_CONTAINER_CLASS_NAME_FORMAT = "$PACKAGE_GENERATE.%s_ModuleContainer"
+internal const val SERVICE_CONTAINER_CLASS_NAME_FORMAT = "$PACKAGE_GENERATE"
 
 internal const val ACTIVITY = "android.app.Activity"
 internal const val SERVICE = "android.app.Service"

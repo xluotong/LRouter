@@ -6,6 +6,6 @@ import com.billbook.lib.router.RouteInfo
 /**
  * @author xluotong@gmail.com
  */
-interface ChainInternal : Interceptor.Chain {
+internal interface ChainInternal : Interceptor.Chain {
     val route: RouteInfo
 }
