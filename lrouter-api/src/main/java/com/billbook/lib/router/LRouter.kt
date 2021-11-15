@@ -19,7 +19,7 @@ object LRouter {
     fun <T> getService(clazz: Class<T>, name: String): T? = delegate.getService(clazz, name)
 
     @JvmStatic
-    fun <T> getService(clazz: Class<T>, vararg params: Any): T? = delegate.getService(clazz, params)
+    fun <T> getService(clazz: Class<T>, vararg params: Any): T? = delegate.getService(clazz, *params)
 
     @JvmStatic
     fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {

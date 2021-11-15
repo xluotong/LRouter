@@ -38,7 +38,7 @@ internal object RouterInternal : LRouter.Delegate {
     override fun <T> getService(clazz: Class<T>, name: String): T? = serviceCentral[clazz, name]
 
     override fun <T> getService(clazz: Class<T>, vararg params: Any): T? {
-        return serviceCentral.getService(clazz, params)
+        return serviceCentral.getService(clazz, *params)
     }
 
     override fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {
