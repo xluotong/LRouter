@@ -39,6 +39,9 @@ object LRouter {
     infix fun navigateTo(request: Request): Response = delegate.navigateTo(request)
 
     @JvmStatic
+    infix fun navigateTo(uri: String): Response = delegate.navigateTo(uri.toRouteRequest())
+
+    @JvmStatic
     infix fun inject(any: Any) = delegate.inject(any)
 
     interface Delegate : RouteCall.Factory {
@@ -58,6 +61,8 @@ inline operator fun <T> LRouter.get(clazz: Class<T>): T? = getService(clazz)
 inline fun String.toRouteRequest(): Request = Request.from(this)
 
 inline fun Uri.toRouteRequest(): Request = Request.from(this)
+
+inline fun Uri.toRouteRequestBuilder(): Request.Builder = Request.Builder.from(this)
 
 inline fun LRouter.getFragment(uri: Uri): Fragment? {
     return navigateTo(Request.from(uri)).fragment

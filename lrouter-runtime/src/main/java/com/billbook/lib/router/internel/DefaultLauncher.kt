@@ -42,17 +42,21 @@ internal class DefaultIntentLauncher : Launcher {
         val request = contract.request
         val fragment: Fragment? = request.fragment
         if (request.requestCode != null) {
-            if (fragment != null) {
-                fragment.startActivityForResult(intent, request.requestCode!!)
-            } else if (context is Activity) {
-                ActivityCompat.startActivityForResult(
-                    context,
-                    intent,
-                    request.requestCode!!,
-                    request.options
-                )
-            } else {
-                throw RuntimeException("Unresovled context of request")
+            when {
+                fragment != null -> {
+                    fragment.startActivityForResult(intent, request.requestCode!!)
+                }
+                context is Activity -> {
+                    ActivityCompat.startActivityForResult(
+                        context,
+                        intent,
+                        request.requestCode!!,
+                        request.options
+                    )
+                }
+                else -> {
+                    throw RuntimeException("Unresovled context of request")
+                }
             }
         } else {
             if (context !is ContextThemeWrapper) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

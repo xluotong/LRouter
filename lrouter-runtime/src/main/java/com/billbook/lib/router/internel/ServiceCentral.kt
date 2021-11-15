@@ -1,8 +1,8 @@
 package com.billbook.lib.router.internel
 
-import com.billbook.lib.router.CacheIn
 import com.billbook.lib.router.ServiceInfo
 import com.billbook.lib.router.ServiceProvider
+import java.lang.reflect.Constructor
 
 /**
  * @author xluotong@gmail.com
@@ -36,62 +36,57 @@ internal class DefaultServiceCentral : ServiceCentral {
 
     @Synchronized
     override fun <T> getService(clazz: Class<T>): T? {
-        return serviceTable[clazz]?.first()
-            ?.let { service ->
-                getOrPutInstance(service) { it.newInstance() }
-            }
+        return getServiceProvider(clazz)?.get()
     }
 
-    private fun <T> getOrPutInstance(
-        serviceInfo: ServiceInfo<*>,
-        producer: (ServiceInfo<*>) -> T
-    ): T? {
-        return when (serviceInfo.cacheIn) {
-            CacheIn.SINGLETON -> {
-                serviceCaches.getOrPut(serviceInfo.definition) {
-                    producer(serviceInfo)
-                } as? T
-            }
-            CacheIn.UNDEFINED -> {
-                producer(serviceInfo)
-            }
-        }
-    }
+//    private fun <T> getOrPutInstance(
+//        serviceInfo: ServiceInfo<*>,
+//        producer: (ServiceInfo<*>) -> T
+//    ): T? {
+//        return when (serviceInfo.cacheIn) {
+//            CacheIn.SINGLETON -> {
+//                serviceCaches.getOrPut(serviceInfo.definition) {
+//                    producer(serviceInfo)
+//                } as? T
+//            }
+//            CacheIn.UNDEFINED -> {
+//                producer(serviceInfo)
+//            }
+//        }
+//    }
 
     @Synchronized
     override fun <T> getService(clazz: Class<T>, name: String): T? {
-        return serviceTable[clazz]?.firstOrNull { it.name == name }?.newInstance<T>()
+        return getServiceProvider(clazz)?.get(name)
     }
 
     @Synchronized
     override fun <T> getService(clazz: Class<T>, vararg params: Any): T? {
-        return serviceTable[clazz]?.first()
-            ?.let { service ->
-                getOrPutInstance(service) { it.newInstance(params) }
-            }
+        return getServiceProvider(clazz)?.get(params)
     }
 
     @Synchronized
     override fun <T> getServiceProvider(clazz: Class<T>): ServiceProvider<T>? {
         return serviceTable[clazz]?.let {
-            DefaultServiceProvider(it as List<ServiceInfo<T>>)
+            DefaultServiceProvider(clazz, it as List<ServiceInfo<T>>)
         }
     }
 }
 
+// TODO 支持迭代
 internal class DefaultServiceProvider<T>(
-    private val services: List<ServiceInfo<T>>
+    override val serviceClazz: Class<T>,
+    private val services: List<ServiceInfo<T>>,
 ) : ServiceProvider<T> {
+    override fun get(): T? = services.firstOrNull()?.service?.newInstance()
 
-    private val iterator: Iterator<ServiceInfo<T>> = services.iterator()
-
-    override fun hasNext(): Boolean = iterator.hasNext()
-
-    override fun next(): T? = iterator.next()?.newInstance()
-
-    override fun get(): T? = services[0].service.newInstance()
-
-    override fun get(vararg params: Any): T? = services[0].newInstance(params)
+    override fun get(vararg params: Any): T? {
+        this.services.forEach {
+            val service = it.service.createInstance(*params)
+            if (service != null) return service
+        }
+        return null
+    }
 
     override fun get(name: String): T? {
         return services.find { it.name == name }?.newInstance()
@@ -102,9 +97,9 @@ private inline fun <T> ServiceInfo<*>.newInstance(): T? {
     return runCatching { this.service.newInstance() as? T }.getOrNull()
 }
 
-private inline fun <T> ServiceInfo<*>.newInstance(vararg params: Any): T? {
-    return runCatching {
-        this.service.getDeclaredConstructor(*params.map { it::class.java }
-            .toTypedArray()).newInstance(params) as? T
-    }.getOrNull()
+private inline fun <T> Class<T>.createInstance(vararg params: Any): T? {
+    return constructors.firstOrNull {
+        runCatching { it.newInstance(*params) as T }.getOrNull() != null
+    } as? T
 }
+

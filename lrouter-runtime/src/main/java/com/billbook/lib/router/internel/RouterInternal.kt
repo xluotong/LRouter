@@ -27,9 +27,9 @@ internal object RouterInternal : LRouter.Delegate {
     }
 
     private fun initRoutes() {
-        ModuleProvider.modules().forEach { moduleContainer ->
-            moduleContainer.withRoutes { routeCentral.register(it) }
-            moduleContainer.withServices { serviceCentral.register(it) }
+        ModuleProvider.modules().forEach { container ->
+            container.withRoutes { routeCentral.register(it) }
+            container.withServices { serviceCentral.register(it) }
         }
     }
 

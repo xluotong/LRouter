@@ -18,7 +18,9 @@ data class ServiceInfo<T>(
 /**
  * Useful if it is lazy create service
  */
-interface ServiceProvider<T> : Iterator<T?>, Provider<T> {
+interface ServiceProvider<T> : Provider<T> {
+
+    val serviceClazz:Class<T>
 
     fun get(vararg params: Any): T?
 

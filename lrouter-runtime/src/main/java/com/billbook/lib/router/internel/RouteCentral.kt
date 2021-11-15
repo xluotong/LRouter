@@ -17,11 +17,14 @@ internal interface RouteCentral {
 internal class DefaultRouteCentral : RouteCentral {
     private val routeTree: RouteTree = RouteTree()
 
+    @Synchronized
     override fun register(routeInfo: RouteInfo) {
         routeTree.add(routeInfo)
     }
 
+    @Synchronized
     override operator fun get(uri: Uri): RouteInfo = routeTree.findRoute(uri) ?: RouteInfo.EMPTY
 
+    @Synchronized
     override fun get(targetClass: Class<*>): List<RouteInfo> = routeTree.findRoute(targetClass)
 }
