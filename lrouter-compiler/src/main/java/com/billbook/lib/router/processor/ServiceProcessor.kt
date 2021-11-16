@@ -79,16 +79,12 @@ private fun TypeMirror.toServiceMeta(typeElement: TypeElement): ServiceMeta {
 }
 
 private fun Element.require(target: String, elements: Elements, types: Types) {
-    errorIf("Annotation of Services and Service cannot be used at the same time, please use Services to merge") {
-        hasAnnotation(
-            Services::class.java
-        ) && hasAnnotation(Service::class.java)
-    }
-    errorIf("$target annotation target ${asType()} is a interface or an annotation type.") { kind.isInterface }
-    errorIf("$target annotation target ${asType()} must be a class.") { !kind.isClass }
-    errorIf("$target annotation target ${asType()} is a enum class.") { isEnum() }
-    errorIf("$target annotation target ${asType()} is a abstract class.") { isAbstract() }
-    errorIf("$target annotation target ${asType()} is a inner class.") { this.isInnerClass(elements) }
+    check(hasAnnotation(Services::class.java) && hasAnnotation(Service::class.java)) { "Annotation of Services and Service cannot be used at the same time, please use Services to merge" }
+    check(!kind.isClass) { "$target annotation target ${asType()} must be a class." }
+    check(isEnum()) { "$target annotation target ${asType()} is a enum class." }
+    check(isAbstract()) { "$target annotation target ${asType()} is a abstract class." }
+    check(isInnerClass(elements)) { "$target annotation target ${asType()} is a inner class." }
+    check(!modifiers.contains(Modifier.PUBLIC)) { "$target annotation target ${asType()} must be a public class." }
     getAnnotation(Services::class.java)?.serviceType()?.find {
         !types.isAssignable(asType(), it)
     }?.let { error("${this.simpleName} does not implement ${it.javaClassName}！") }

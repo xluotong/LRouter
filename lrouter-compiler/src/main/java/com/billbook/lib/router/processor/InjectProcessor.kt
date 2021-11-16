@@ -86,20 +86,16 @@ private fun Element.requireAutowired(elements: Elements, types: Types) {
     val typeElement = this.enclosingElement as TypeElement
     val activity = elements.getTypeElement(ACTIVITY).asType()
     val fragment = elements.getTypeElement(FRAGMENT).asType()
-    errorIf("@Autowired target field must not be private!") {
-        modifiers.contains(Modifier.PRIVATE)
-    }
-    errorIf("@Autowired target class must be activity or fragment") {
+    check(modifiers.contains(Modifier.PRIVATE)) { "@Autowired target field must not be private!" }
+    check(
         !types.isSubtype(typeElement.asType(), activity)
                 && !types.isSubtype(
             typeElement.asType(),
             fragment
         )
-    }
+    ) { "@Autowired target class must be activity or fragment" }
 }
 
 private fun Element.requireInject(elements: Elements, types: Types) {
-    errorIf("@Inject target field must not be private!") {
-        modifiers.contains(Modifier.PRIVATE)
-    }
+    check(modifiers.contains(Modifier.PRIVATE)) { "@Inject target field must not be private!" }
 }

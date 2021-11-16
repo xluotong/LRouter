@@ -93,16 +93,12 @@ class RouteProcessor : MetaProcessor {
 }
 
 private fun Element.require(target: String, elements: Elements) {
-    errorIf("Annotation of Routes and Route cannot be used at the same time, please use Services to merge") {
-        hasAnnotation(
-            Route::class.java
-        ) && hasAnnotation(Routes::class.java)
-    }
-    errorIf("$target annotation target ${asType()} is a interface or an annotation type.") { kind.isInterface }
-    errorIf("$target annotation target ${asType()} must be a class.") { !kind.isClass }
-    errorIf("$target annotation target ${asType()} is a enum class.") { isEnum() }
-    errorIf("$target annotation target ${asType()} is a abstract class.") { isAbstract() }
-    errorIf("$target annotation target ${asType()} is a inner class.") { this.isInnerClass(elements) }
+    check(hasAnnotation(Route::class.java) && hasAnnotation(Routes::class.java)) { "Annotation of Routes and Route cannot be used at the same time, please use Services to merge" }
+    check(!kind.isClass) { "$target annotation target ${asType()} must be a class." }
+    check(isEnum()) { "$target annotation target ${asType()} is a enum class." }
+    check(isAbstract()) { "$target annotation target ${asType()} is a abstract class." }
+    check(isInnerClass(elements)) { "$target annotation target ${asType()} is a inner class." }
+    check(!modifiers.contains(Modifier.PUBLIC)) { "$target annotation target ${asType()} must be a public class." }
 }
 
 private fun Routes.launcherType(): TypeMirror {
@@ -144,10 +140,6 @@ internal fun Element.isInnerClass(elements: Elements): Boolean {
         return true
     }
     return false
-}
-
-internal inline fun errorIf(message: String, predicate: () -> Boolean) {
-    if (predicate()) error(message)
 }
 
 internal val TypeMirror.javaClassName: String get() = ((this as DeclaredType).asElement() as TypeElement).qualifiedName.toString()
