@@ -18,6 +18,7 @@ import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
+import kotlin.contracts.contract
 
 /**
  * @author xluotong@gmail.com
@@ -93,12 +94,18 @@ class RouteProcessor : MetaProcessor {
 }
 
 private fun Element.require(target: String, elements: Elements) {
-    check(hasAnnotation(Route::class.java) && hasAnnotation(Routes::class.java)) { "Annotation of Routes and Route cannot be used at the same time, please use Services to merge" }
-    check(!kind.isClass) { "$target annotation target ${asType()} must be a class." }
-    check(isEnum()) { "$target annotation target ${asType()} is a enum class." }
-    check(isAbstract()) { "$target annotation target ${asType()} is a abstract class." }
-    check(isInnerClass(elements)) { "$target annotation target ${asType()} is a inner class." }
-    check(!modifiers.contains(Modifier.PUBLIC)) { "$target annotation target ${asType()} must be a public class." }
+    errorIf(hasAnnotation(Route::class.java) && hasAnnotation(Routes::class.java)) { "Annotation of Routes and Route cannot be used at the same time, please use Services to merge" }
+    errorIf(!kind.isClass) { "$target annotation target ${asType()} must be a class." }
+    errorIf(isEnum()) { "$target annotation target ${asType()} is a enum class." }
+    errorIf(isAbstract()) { "$target annotation target ${asType()} is a abstract class." }
+    errorIf(isInnerClass(elements)) { "$target annotation target ${asType()} is a inner class." }
+    errorIf(!modifiers.contains(Modifier.PUBLIC)) { "$target annotation target ${asType()} must be a public class." }
+}
+
+inline fun errorIf(value: Boolean, lazyMessage: () -> Any): Unit {
+    if (value) {
+        error(lazyMessage())
+    }
 }
 
 private fun Routes.launcherType(): TypeMirror {

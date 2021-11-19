@@ -86,8 +86,8 @@ private fun Element.requireAutowired(elements: Elements, types: Types) {
     val typeElement = this.enclosingElement as TypeElement
     val activity = elements.getTypeElement(ACTIVITY).asType()
     val fragment = elements.getTypeElement(FRAGMENT).asType()
-    check(modifiers.contains(Modifier.PRIVATE)) { "@Autowired target field must not be private!" }
-    check(
+    errorIf(modifiers.contains(Modifier.PRIVATE)) { "@Autowired target field must not be private!" }
+    errorIf(
         !types.isSubtype(typeElement.asType(), activity)
                 && !types.isSubtype(
             typeElement.asType(),
