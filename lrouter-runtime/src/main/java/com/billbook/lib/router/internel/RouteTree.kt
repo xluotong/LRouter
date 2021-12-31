@@ -1,6 +1,7 @@
 package com.billbook.lib.router.internel
 
 import android.net.Uri
+import androidx.collection.arrayMapOf
 import com.billbook.lib.router.RouteInfo
 
 internal const val EMPTY_STRING = ""
@@ -10,7 +11,7 @@ internal const val EMPTY_STRING = ""
  */
 internal class RouteTree {
 
-    private val root: Node = Node(EMPTY_STRING, null, mutableMapOf(), false)
+    private val root: Node = Node(EMPTY_STRING, false, arrayMapOf())
 
     fun add(routeInfo: RouteInfo) {
         val segments = mutableListOf(routeInfo.scheme, routeInfo.host) + routeInfo.path.split("/")
@@ -18,21 +19,11 @@ internal class RouteTree {
         var node = root
         segments.forEachIndexed { index, segment ->
             if (node.children == null) {
-                node.children = mutableMapOf<String, Node>().also {
-                    it[segment] = Node(
-                        value = segment,
-                        routeInfo = if (index == segments.lastIndex) routeInfo else null,
-                        isWild = segment == "*"
-                    )
-                }
-            } else if (node.children!![segment] == null) {
-                node.children!![segment] = Node(
-                    value = segment,
-                    routeInfo = if (index == segments.lastIndex) routeInfo else null,
-                    isWild = segment == "*"
-                )
+                node.children = arrayMapOf<String, Node>()
             }
-            node = node.children!![segment]!!
+            val childNode = node.children!!.getOrPut(segment) { Node(segment, segment == "*") }
+            childNode.routeInfo = if (index == segments.lastIndex) routeInfo else null
+            node = childNode
         }
     }
 
@@ -66,19 +57,20 @@ internal class RouteTree {
         }
     }
 
-    class Node(
-        val value: String, // 路由中由'/'分隔的部分
-        val routeInfo: RouteInfo? = null,
-        var children: MutableMap<String, Node>? = null,
-        val isWild: Boolean // 是否是通配符节点
+    private class Node(
+        val segment: String, // 路由中由'/'分隔的部分
+        val isWild: Boolean, // 是否是通配符节点
+        var children: MutableMap<String, Node>? = null
     ) {
+        var routeInfo: RouteInfo? = null
+
         inline fun hasRoute() = routeInfo != null
 
         inline fun isLeaf() = children.isNullOrEmpty()
     }
 }
 
-private inline fun Uri.toRouteSegments(): List<String> {
+private fun Uri.toRouteSegments(): List<String> {
     val segments = mutableListOf<String>()
     segments.add(scheme ?: EMPTY_STRING)
     segments.add(host ?: EMPTY_STRING)
