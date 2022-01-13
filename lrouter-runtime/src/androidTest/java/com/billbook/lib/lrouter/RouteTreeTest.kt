@@ -76,6 +76,7 @@ class RouteTreeTest {
         assert(routeTree.findRoute("/user/test".toUri())?.path == "/user/*")
         assert(routeTree.findRoute("billbook://user/user/register".toUri())?.scheme == "billbook")
         assert(routeTree.findRoute("billbook://book/keeping".toUri())?.targetClass == RouteTreeTest::class.java)
+        assert(routeTree.findRoute("billbook://book/keeping/detail".toUri())?.targetClass == RouteTreeTest::class.java)
     }
 
     private fun String.toUri() = Uri.parse(this)
