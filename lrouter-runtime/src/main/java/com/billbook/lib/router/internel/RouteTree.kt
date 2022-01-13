@@ -3,6 +3,7 @@ package com.billbook.lib.router.internel
 import android.net.Uri
 import androidx.collection.arrayMapOf
 import com.billbook.lib.router.RouteInfo
+import java.lang.RuntimeException
 
 internal const val EMPTY_STRING = ""
 
@@ -22,7 +23,12 @@ internal class RouteTree {
                 node.children = arrayMapOf<String, Node>()
             }
             val childNode = node.children!!.getOrPut(segment) { Node(segment, segment == "*") }
-            childNode.routeInfo = if (index == segments.lastIndex) routeInfo else null
+            if (index == segments.lastIndex && childNode.routeInfo != null) {
+                throw RuntimeException("$routeInfo and ${childNode.routeInfo} conflict!")
+            }
+            if (index == segments.lastIndex && childNode.routeInfo == null) {
+                childNode.routeInfo = routeInfo
+            }
             node = childNode
         }
     }
