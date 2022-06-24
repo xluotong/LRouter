@@ -3,7 +3,6 @@ package com.billbook.lib.router
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import kotlin.jvm.Throws
 
 /**
  * @author xluotong@gmail.com
